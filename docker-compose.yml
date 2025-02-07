@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+    
+  om_web:
+    container_name: om_web
+    build: ./api_onson_mail
+    ports:
+      - "7000:7000"
+    command: sh -c "gunicorn api_onson_mail.wsgi:application -b 0.0.0.0:7000 --reload -t 120"
+    restart: always
+    env_file:
+      - ./api_onson_mail/.env
+    volumes:
+      - ./api_onson_mail/:/app/
+      - ./media/:/media/
+      - ./static/:/static/
+
+  om_celery:
+    container_name: om_celery
+    build: ./api_onson_mail
+    command: celery -A api_onson_mail worker -l info
+    env_file:
+      - ./api_onson_mail/.env
+    volumes:
+      - ./api_onson_mail/:/app/
+      - ./media/:/media/
+      - ./static/:/static/
+
+  om_redis:
+    container_name: om_redis
+    image: redis:alpine
