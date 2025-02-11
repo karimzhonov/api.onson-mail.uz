@@ -19,3 +19,5 @@ requests
 gunicorn
 celery==5.2.7
 django-celery-results
+djangorestframework-simplejwt
+django-filter

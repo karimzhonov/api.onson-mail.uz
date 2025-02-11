@@ -2,7 +2,8 @@ import uuid
 from celery import shared_task
 from django.db import models
 from django.utils import timezone
-from cargo.api import request as api_request
+from cargo.api_customs.egov import ApiPushService
+from cargo.api_customs.models import System
 
 
 STATUSES = (
@@ -36,16 +37,18 @@ class Part(models.Model):
 
     def send_request(self):
         Order.objects.filter(parts=self).update(**{self.status: timezone.now()})
-        _send_request.delay(self.number)
+        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
+        _send_request.delay(part_number=self.number, systems=list(systems))
 
 
-@shared_task
-def _send_request(part_number):
+@shared_task(task_name='egov_receive')
+def _send_request(part_number, systems):
+    api = ApiPushService()
     success_data = []
     for order in Order.objects.select_related("parts", "parts__country", "client").filter(parts_id=part_number):
         json = order.serialized_data
-        response = api_request(order.id, json)
-        success_data.append({"body": json, "response": response.text, "status": response.status_code})
+        response = api.create_or_update(order.id, json, systems)
+        success_data.append({"id": str(order.id), "response": response.text, "status": response.status_code})
     return success_data
 
 
