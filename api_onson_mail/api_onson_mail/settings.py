@@ -133,12 +133,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
-
-MEDIA_ROOT = BASE_DIR / '../media'
-STATIC_ROOT = BASE_DIR / '../static'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -183,3 +177,21 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 X_FRAME_OPTIONS = 'ALLOWALL'
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://onson-mail.uz"]
+
+if os.getenv('USE_S3', False):
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/media/'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_REGION_NAME = 'ru-1'
+    AWS_S3_SIGNATURE_VERSION = 's3'
+else:
+    MEDIA_URL = 'media/'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+STATIC_URL = 'static/'
+MEDIA_ROOT = BASE_DIR / '../media'
+STATIC_ROOT = BASE_DIR / '../static'
