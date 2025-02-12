@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import OrderByNumberView
 
 urlpatterns = [
-    path('order/<number>/', OrderByNumberView.as_view(), name='index'),
+    path('order/<number>/', OrderByNumberView.as_view()),
+    path('admin/', include("cargo.order.admin.urls")),
 ]

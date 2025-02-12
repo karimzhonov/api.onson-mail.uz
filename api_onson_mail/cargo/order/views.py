@@ -8,3 +8,5 @@ class OrderByNumberView(RetrieveAPIView):
     lookup_url_kwarg = 'number'
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
+    permission_classes = ()
+    authentication_classes = ()

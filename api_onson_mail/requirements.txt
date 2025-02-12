@@ -23,3 +23,6 @@ djangorestframework-simplejwt
 django-filter
 django-storages
 boto3
+django-phonenumber-field
+xhtml2pdf
+qrcode==7.4.2
