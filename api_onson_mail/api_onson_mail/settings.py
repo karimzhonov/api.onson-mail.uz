@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.getenv('DEBUG', 1)))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -176,7 +176,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 X_FRAME_OPTIONS = 'ALLOWALL'
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://onson-mail.uz"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://onson-mail.uz", "https://admin.onson-mail.uz", "https://api.onson-mail.uz"]
 
 if os.getenv('USE_S3', False):
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
