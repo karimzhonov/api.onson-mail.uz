@@ -26,3 +26,6 @@ boto3
 django-phonenumber-field
 xhtml2pdf
 qrcode==7.4.2
+daphne
+channels-redis
+djangochannelsrestframework==1.1.0

@@ -209,3 +209,13 @@ else:
 STATIC_URL = 'static/'
 MEDIA_ROOT = BASE_DIR / '../media'
 STATIC_ROOT = BASE_DIR / '../static'
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv("REDIS_HOST", "localhost"), 6379)],
+        },
+    },
+}

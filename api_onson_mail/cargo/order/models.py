@@ -4,14 +4,14 @@ from django.db import models
 from django.utils import timezone
 from cargo.api_customs.egov import ApiPushService
 from cargo.api_customs.models import System
-
+from .api_admin.consumers import send_data_to_session
 
 STATUSES = (
     ('departure_datetime', 'Yolga chiqdi'),
     ('enter_uzb_datetime', 'UZBga keldi'),
     ('process_customs_datetime', 'Tamojnada'),
     ('process_local_datetime', 'Dastavkada'),
-    ('received_datetime', 'Yetkasib berildi'),
+    ('process_received_datetime', 'Yetkasib berildi'),
 )
 
 
@@ -68,6 +68,18 @@ class Order(models.Model):
     weight = models.FloatField()
 
     @property
+    def status(self):
+        if self.process_received_datetime:
+            return 'process_received_datetime'
+        elif self.process_local_datetime:
+            return 'process_local_datetime'
+        elif self.process_customs_datetime:
+            return 'process_customs_datetime'
+        elif self.enter_uzb_datetime:
+            return 'enter_uzb_datetime'
+        return 'departure_datetime'
+
+    @property
     def delivery_price(self):
         return self.parts.country.price_per * self.weight
 
@@ -88,3 +100,8 @@ class Order(models.Model):
             "shipmentProcessLocal": str(self.process_local_datetime),
             "shipmentReceivedInd": str(self.process_received_datetime),
         }
+
+    def send_ws_data(self, user_id):
+        from .api_admin.serializers import OrderSerializer
+
+        send_data_to_session(user_id, OrderSerializer(self).data)

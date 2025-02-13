@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -28,6 +29,17 @@ class OrderViewSet(ModelViewSet):
             'Content-Length': len(data),
         }
         return Response(data, headers=headers, status=200)
+
+    @action(detail=True, methods=['patch'])
+    def change_status(self, request, pk=None):
+        order = self.get_object()
+        status = request.data.get('status')
+        if hasattr(order, status):
+            setattr(order, status, timezone.now())
+            order.save()
+            order.send_ws_data(self.request.user.id)
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
 
 
 class PartViewSet(ModelViewSet):
