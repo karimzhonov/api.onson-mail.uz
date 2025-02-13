@@ -3,12 +3,12 @@ import os
 from contrib.pdf import generate_pdf
 from contrib.qrcode import generate_qrcode
 
+
 def generate_invoices(orders):
     orders_html = [_generate_invoice_html(order) for order in orders]
-    orders_html = [f"<tr>{''.join(orders_html[i: i+2] 
-                                  if len(orders_html[i: i+2]) == 2 
-                                  else [*orders_html[i: i+2], '<td></td>'])}</tr>"
-                   for i in range(0, len(orders_html), 2)]
+    orders_html = [
+        f"<tr>{''.join(orders_html[i: i + 2] if len(orders_html[i: i + 2]) == 2 else [*orders_html[i: i + 2], '<td></td>'])}</tr>"
+        for i in range(0, len(orders_html), 2)]
     html = f"""
     <html>
     <body style="width: 100px">
