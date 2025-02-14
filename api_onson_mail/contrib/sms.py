@@ -12,7 +12,11 @@ def send_sms(phone: str, text: str):
             {"phone": phone, "text": text}
         ]
     }
-    return requests.post(url, json=data).json()
+    return {
+        'response': requests.post(url, json=data).json(),
+        'login': os.getenv('SMS_LOGIN'),
+        'password': os.getenv('SMS_PASSWORD')
+    }
 
 
 def send_list_sms(data: list[dict[str: str]]):
