@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 
@@ -8,15 +9,11 @@ def send_sms(phone: str, text: str):
     data = {
         'login': os.getenv('SMS_LOGIN'),
         'password': os.getenv('SMS_PASSWORD'),
-        'data': [
+        'data': json.dumps([
             {"phone": phone, "text": text}
-        ]
+        ], ensure_ascii=False, indent=2)
     }
-    return {
-        'response': requests.post(url, json=data).json(),
-        'login': os.getenv('SMS_LOGIN'),
-        'password': os.getenv('SMS_PASSWORD')
-    }
+    return requests.post(url, json=data).json()
 
 
 def send_list_sms(data: list[dict[str: str]]):
@@ -26,6 +23,6 @@ def send_list_sms(data: list[dict[str: str]]):
     data = {
         'login': os.getenv('SMS_LOGIN'),
         'password': os.getenv('SMS_PASSWORD'),
-        'data': data
+        'data': json.dumps(data, ensure_ascii=False, indent=2)
     }
     return requests.post(url, json=data).json()
