@@ -2,8 +2,10 @@ from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.conf import settings
 from phonenumber_field.modelfields import PhoneNumberField
 from .utils import generate_opt
+from .sms import send_otp
 
 OPT_EXPIRING_LIFESPAN = timedelta(minutes=1)
 
@@ -39,4 +41,6 @@ class User(AbstractUser):
 
     def send_opt(self, save=True):
         self.opt_create(save)
-        print(self.opt, self.phone)
+        if not settings.DEBUG:
+            return send_otp.delay(str(self.phone), str(self.opt))
+        print(self.phone, self.opt)

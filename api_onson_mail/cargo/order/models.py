@@ -88,17 +88,17 @@ class Order(models.Model):
         return {
             "shipmentId": str(self.id),
             "shipmentNumber": str(self.number),
-            "shipmentIdCreatTime": str(self.create_time),
+            "shipmentIdCreatTime": self.create_time.timestamp(),
             "shipmentOrgName": str(self.parts.country.org_name),
             "shipmentOrgStir": str(self.parts.country.org_stir),
             "shipmentCountryCode": str(self.parts.country.code),
             "shipmentCountry": str(self.parts.country.name),
             "shipmentSendOrg": None,
-            "shipmentDepartureTime": str(self.departure_datetime),
-            "shipmentEnterUzb": str(self.enter_uzb_datetime),
-            "shipmentProcessCustoms": str(self.process_customs_datetime),
-            "shipmentProcessLocal": str(self.process_local_datetime),
-            "shipmentReceivedInd": str(self.process_received_datetime),
+            "shipmentDepartureTime": self.departure_datetime.timestamp(),
+            "shipmentEnterUzb": self.enter_uzb_datetime.timestamp(),
+            "shipmentProcessCustoms": self.process_customs_datetime.timestamp(),
+            "shipmentProcessLocal": self.process_local_datetime.timestamp(),
+            "shipmentReceivedInd": self.process_received_datetime.timestamp(),
         }
 
     def send_ws_data(self, user_id):
