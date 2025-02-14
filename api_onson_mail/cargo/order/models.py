@@ -66,6 +66,8 @@ class Order(models.Model):
     client = models.ForeignKey("client.Client", on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
     weight = models.FloatField()
+    facture_price = models.FloatField(null=True)
+
 
     @property
     def status(self):

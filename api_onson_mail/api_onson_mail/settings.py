@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'jet',
     'oauth',
+    'cargo',
     'cargo.order',
     'cargo.client',
     'cargo.api_customs',
@@ -97,6 +98,14 @@ DATABASES = {
         'HOST': os.getenv('POSTGRES_HOST'),
         'PORT': os.getenv('POSTGRES_PORT'),
     },
+    'old': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('OLD_POSTGRES_DB'),
+        'USER': os.getenv('OLD_POSTGRES_USER'),
+        'PASSWORD': os.getenv('OLD_POSTGRES_PASSWORD'),
+        'HOST': os.getenv('OLD_POSTGRES_HOST'),
+        'PORT': os.getenv('OLD_POSTGRES_PORT'),
+    }
 }
 
 
