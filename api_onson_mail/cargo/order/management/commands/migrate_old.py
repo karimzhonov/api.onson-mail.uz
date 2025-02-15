@@ -72,7 +72,7 @@ class Command(BaseCommand):
             print(order)
             orders.append(models.Order(
                 number=order.number,
-                create_date=order.date,
+                create_time=order.date,
                 departure_datetime=order.date,
                 enter_uzb_datetime=order.date,
                 process_customs_datetime=order.date,
