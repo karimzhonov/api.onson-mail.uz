@@ -67,7 +67,7 @@ class Command(BaseCommand):
         orders = []
 
         for order in OrdersOrder.objects.using('old').all().prefetch_related('part'):
-            client = Client.objects.filter(pnfl=order.client_id).filter()
+            client = Client.objects.filter(pnfl=order.client_id).first()
             if not client: continue
             print(order)
             orders.append(models.Order(
