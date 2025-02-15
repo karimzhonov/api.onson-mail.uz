@@ -3,8 +3,12 @@ from datetime import timedelta
 from django.conf import settings
 from rest_framework_simplejwt.utils import aware_utcnow, datetime_to_epoch
 
-private_key = open(settings.BASE_DIR / 'private_key.rsa', 'rb').read()
-public_key = open(settings.BASE_DIR / 'public_key.rsa', 'rb').read()
+try:
+    private_key = open(settings.BASE_DIR / 'private_key.rsa', 'rb').read()
+    public_key = open(settings.BASE_DIR / 'public_key.rsa', 'rb').read()
+except FileNotFoundError:
+    private_key = None
+    public_key = None
 
 
 def get_token():
