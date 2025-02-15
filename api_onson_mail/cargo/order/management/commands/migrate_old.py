@@ -64,29 +64,27 @@ class Command(BaseCommand):
 
 
     def orders(self):
-        orders = []
-
         for order in OrdersOrder.objects.using('old').all().prefetch_related('part'):
             client = Client.objects.filter(pnfl=order.client_id).first()
             if not client: continue
             print(order)
-            orders.append(models.Order(
+            models.Order.objects.get_or_create(
+                {
+                    "create_time":order.date,
+                    "departure_datetime":order.date,
+                    "enter_uzb_datetime":order.date,
+                    "process_customs_datetime":order.date,
+                    "process_local_datetime":order.date,
+                    "process_received_datetime":order.date,
+                    "parts_id":order.part.number,
+                    "client":client,
+                    "name":order.name,
+                    "weight":order.weight,
+                    "facture_price":order.facture_price
+                }
                 number=order.number,
-                create_time=order.date,
-                departure_datetime=order.date,
-                enter_uzb_datetime=order.date,
-                process_customs_datetime=order.date,
-                process_local_datetime=order.date,
-                process_received_datetime=order.date,
-                parts_id=order.part.number,
-                client=client,
-                name=order.name,
-                weight=order.weight,
-                facture_price=order.facture_price
-            ))
-            
-
-        models.Order.objects.bulk_create(orders)
+                
+            )
 
 
     @atomic
