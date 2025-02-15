@@ -81,7 +81,7 @@ class Command(BaseCommand):
                     "name":order.name,
                     "weight":order.weight,
                     "facture_price":order.facture_price
-                }
+                },
                 number=order.number,
                 
             )
