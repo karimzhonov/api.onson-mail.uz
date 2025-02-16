@@ -55,4 +55,4 @@ def generate_qrcode(pk):
     file = io.BytesIO()
     # Сохранение QR-кода
     qr_img.save(file, format="png")
-    return base64.b64encode(file.getvalue()).decode()
+    return file

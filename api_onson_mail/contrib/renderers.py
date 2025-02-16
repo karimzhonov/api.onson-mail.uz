@@ -2,11 +2,11 @@
 from rest_framework.renderers import BaseRenderer
 
 
-class PDFRenderer(BaseRenderer):
+class XLSXRenderer(BaseRenderer):
     """ Renderer for PDF binary content. """
 
-    media_type = 'application/pdf'
-    format = 'pdf'
+    media_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    format = 'xlsx'
     charset = None
     render_style = 'binary'
 

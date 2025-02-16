@@ -7,6 +7,8 @@ class Client(models.Model):
     fio = models.CharField('ФИО', max_length=255)
     address = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateField(auto_now_add=True)
+    token = models.JSONField(default=dict)
+    myid_data = models.JSONField(default=dict)
 
     def __str__(self) -> str:
         return self.fio

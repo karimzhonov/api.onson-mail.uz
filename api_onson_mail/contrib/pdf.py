@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 
 def generate_pdf(html):
-    result = pisa.CreatePDF(html, dest=BytesIO())
+    result = pisa.CreatePDF(html, dest=BytesIO(), encoding='UTF-8')
     if result.err:
         raise ValidationError('Error generating PDF: %s' % result.err, 'pdf')
     return result.dest.getvalue()

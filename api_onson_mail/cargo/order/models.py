@@ -31,6 +31,7 @@ class Part(models.Model):
     number = models.IntegerField(primary_key=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     status = models.CharField("Статус", max_length=50, default=STATUSES[0][0], choices=STATUSES)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.number} - {self.country}"
@@ -67,7 +68,7 @@ class Order(models.Model):
     name = models.CharField(max_length=255)
     weight = models.FloatField()
     facture_price = models.FloatField(null=True)
-
+    products = models.JSONField(default=dict)
 
     @property
     def status(self):

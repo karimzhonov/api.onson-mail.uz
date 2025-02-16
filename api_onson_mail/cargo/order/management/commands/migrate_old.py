@@ -83,7 +83,6 @@ class Command(BaseCommand):
                     "facture_price":order.facture_price
                 },
                 number=order.number,
-                
             )
 
 
