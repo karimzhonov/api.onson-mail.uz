@@ -33,7 +33,7 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 class PartSerializer(serializers.ModelSerializer):
-    countery = CountrySerializer()
+    country = CountrySerializer()
 
     class Meta:
         model = Part
