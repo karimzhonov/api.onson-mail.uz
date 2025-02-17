@@ -1,4 +1,5 @@
 import uuid
+import string
 from celery import shared_task
 from django.db import models
 from django.utils import timezone
@@ -7,6 +8,7 @@ from cargo.api_customs.models import System
 from .api_admin.consumers import send_data_to_session
 
 STATUSES = (
+    ('create_time', 'Sozdan'),
     ('departure_datetime', 'Yolga chiqdi'),
     ('enter_uzb_datetime', 'UZBga keldi'),
     ('process_customs_datetime', 'Tamojnada'),
@@ -53,9 +55,33 @@ def _send_request(part_number, systems):
     return success_data
 
 
+def _number_to_string(n):
+    alphabet = string.ascii_uppercase
+    base = len(alphabet)
+    result = []
+    n -= 1  # Коррекция для 1-индексации
+
+    while n >= 0:
+        result.append(alphabet[n % base])
+        n = n // base - 1
+
+    s = ''.join(reversed(result))
+    return (3 - len(s)) * "A" + s
+
+def _generate_order_number(order):
+    count = Order.objects.count() + 1
+    number = str(count % 100000)
+    seria = count // 100000
+    s = _number_to_string(seria + 1)
+    n = (5 - len(number)) * "0" + number
+    part = str(order.parts.number)
+    p = (3 - len(part)) * "0" + part
+    return f"{s}{n}P{p}"
+
+
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    number = models.CharField(max_length=100, unique=True)
+    number = models.CharField(max_length=100, unique=True, editable=False)
     create_time = models.DateTimeField(auto_now_add=True)
     departure_datetime = models.DateTimeField(blank=True, null=True)
     enter_uzb_datetime = models.DateTimeField(blank=True, null=True)
@@ -65,10 +91,20 @@ class Order(models.Model):
 
     parts = models.ForeignKey(Part, on_delete=models.CASCADE)
     client = models.ForeignKey("client.Client", on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=255)
     weight = models.FloatField()
-    facture_price = models.FloatField(null=True)
+    facture_price = models.IntegerField(null=True)
     products = models.JSONField(default=dict)
+
+    @classmethod
+    def status_sql(cls):
+        return models.Case(
+            models.When(process_received_datetime__isnull=False, then=models.Value("process_received_datetime")),
+            models.When(process_local_datetime__isnull=False, then=models.Value("process_local_datetime")),
+            models.When(process_customs_datetime__isnull=False, then=models.Value("process_customs_datetime")),
+            models.When(enter_uzb_datetime__isnull=False, then=models.Value("enter_uzb_datetime")),
+            models.When(departure_datetime__isnull=False, then=models.Value("departure_datetime")),
+            default=models.Value("create_time"),
+        )
 
     @property
     def status(self):
@@ -80,7 +116,9 @@ class Order(models.Model):
             return 'process_customs_datetime'
         elif self.enter_uzb_datetime:
             return 'enter_uzb_datetime'
-        return 'departure_datetime'
+        if self.departure_datetime:
+            return 'departure_datetime'
+        return 'create_time'
 
     @property
     def delivery_price(self):
@@ -108,3 +146,7 @@ class Order(models.Model):
         from .api_admin.serializers import OrderSerializer
 
         send_data_to_session(user_id, OrderSerializer(self).data)
+
+    def save(self, *args, **kwargs):
+        self.number = _generate_order_number(self)
+        return super(Order, self).save(*args, **kwargs)

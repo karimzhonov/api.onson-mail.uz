@@ -19,7 +19,7 @@ class PartAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['number', 'name', 'client']
+    list_display = ['number', 'client', 'parts']
     readonly_fields = [
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'

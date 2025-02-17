@@ -8,7 +8,6 @@ def myid_auth(request):
     return HttpResponsePermanentRedirect(url)
 
 
-
 def myid_code(request, code):
     myid = MyId()
     token = myid.get_token(code)

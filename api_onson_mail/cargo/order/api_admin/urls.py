@@ -8,5 +8,6 @@ router.register('part', views.PartViewSet, 'admin-part')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('status/', views.StatusView.as_view()),
     path('products-generator/<price>/', views.ProductGeneratorView.as_view()),
 ]

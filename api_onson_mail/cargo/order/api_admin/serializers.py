@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from cargo.client.serializers import ClientSerializer
+from cargo.client.api_admin.serializers import ClientSerializer
 from cargo.order.models import Order, Part, Country
 
 
