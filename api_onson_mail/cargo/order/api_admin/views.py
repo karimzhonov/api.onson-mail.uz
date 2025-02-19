@@ -1,32 +1,14 @@
 from django.utils import timezone
-from rest_framework.generics import RetrieveAPIView
 from rest_framework.decorators import action
-from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
 from contrib.renderers import XLSXRenderer
 
-from ..models import Order, Part, STATUSES
-from ..product import generate_cart
+from ..models import Order, Part
 from . import serializers
 from .xlsxs import generate_invoice
 from .filters import OrderFilter, PartFilter
 
-
-class StatusView(RetrieveAPIView):
-
-    def retrieve(self, request, *args, **kwargs):
-        statuses = dict(STATUSES)
-        for k, v in statuses.items():
-            statuses[k] = {"name": v}
-        statuses['create_time']["color"] = 'lime'
-        statuses['departure_datetime']["color"] = 'gray'
-        statuses['enter_uzb_datetime']["color"] = 'red'
-        statuses['process_customs_datetime']["color"] = 'orange'
-        statuses['process_local_datetime']["color"] = 'blue'
-        statuses['process_received_datetime']["color"] = 'green'
-        return Response(statuses)
 
 class OrderViewSet(ModelViewSet):
     perms = ['order.order']
@@ -64,7 +46,8 @@ class OrderViewSet(ModelViewSet):
             setattr(order, status, timezone.now())
             order.save()
             order.send_ws_data(self.request.user.id)
-        serializer = self.get_serializer(order)
+            order.send_api_customs_data()
+        serializer = serializers.OrderSerializer(order, context=self.get_serializer_context())
         return Response(serializer.data)
 
 
@@ -80,16 +63,3 @@ class PartViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Part.objects.filter(country__in=self.request.user.countries.all()).order_by("-date")
-
-
-class ProductGeneratorView(RetrieveAPIView):      
-    perms = ['order.order']  
-    
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            price = float(self.kwargs.get('price'))
-        except ValueError:
-            raise ValidationError({'price': "Must be number"})
-        
-        instance = generate_cart(price)
-        return Response(instance)

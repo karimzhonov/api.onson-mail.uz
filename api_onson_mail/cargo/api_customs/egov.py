@@ -24,17 +24,21 @@ class ApiPushService:
         }
         return requests.post(url, json=json, headers=headers)
 
+    def ping(self):
+        url = self.base_url + "/ping"
+        return requests.get(url, headers=self._get_header()).text
+
     def get_subscribers(self):
         url = self.base_url + "/publisher/fetch-subscribers"
         headers = self._get_header()
-        return requests.get(url, headers=headers)
+        return requests.get(url, headers=headers).json()
 
     def get_statistics(self):
         url = self.base_url + "/publisher/fetch-daily-delivery-statistics"
         headers = self._get_header()
-        return requests.get(url, headers=headers)
+        return requests.get(url, headers=headers).json()
 
     def get_statistic_pk(self, pk):
         url = self.base_url + f"publisher/fetch-delivery-detailed-report/{pk}"
         headers = self._get_header()
-        return requests.get(url, headers=headers)
+        return requests.get(url, headers=headers).json()

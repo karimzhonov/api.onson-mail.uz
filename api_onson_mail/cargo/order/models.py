@@ -8,12 +8,12 @@ from cargo.api_customs.models import System
 from .api_admin.consumers import send_data_to_session
 
 STATUSES = (
-    ('create_time', 'Sozdan'),
-    ('departure_datetime', 'Yolga chiqdi'),
-    ('enter_uzb_datetime', 'UZBga keldi'),
-    ('process_customs_datetime', 'Tamojnada'),
-    ('process_local_datetime', 'Dastavkada'),
-    ('process_received_datetime', 'Yetkasib berildi'),
+    ('create_time', 'Cоздан'),
+    ('departure_datetime', 'Отправлено'),
+    ('enter_uzb_datetime', 'Узбекистане'),
+    ('process_customs_datetime', 'В Таможне'),
+    ('process_local_datetime', 'В доставке'),
+    ('process_received_datetime', 'Доставлен'),
 )
 
 
@@ -38,17 +38,18 @@ class Part(models.Model):
     def __str__(self):
         return f"{self.number} - {self.country}"
 
-    def send_request(self):
+    def send_api_customs_data(self):
         Order.objects.filter(parts=self).update(**{self.status: timezone.now()})
+        order_ids = list(Order.objects.filter(parts=self).values_list('id', flat=True))
         systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
-        _send_request.delay(part_number=self.number, systems=list(systems))
+        _send_api_customs_data.delay(order_ids, systems=systems)
 
 
-@shared_task(task_name='egov_receive')
-def _send_request(part_number, systems):
+@shared_task
+def _send_api_customs_data(order_ids, systems):
     api = ApiPushService()
     success_data = []
-    for order in Order.objects.select_related("parts", "parts__country", "client").filter(parts_id=part_number):
+    for order in Order.objects.select_related("parts", "parts__country", "client").filter(id__in=order_ids):
         json = order.serialized_data
         response = api.create_or_update(order.id, json, systems)
         success_data.append({"id": str(order.id), "response": response.text, "status": response.status_code})
@@ -92,8 +93,16 @@ class Order(models.Model):
     parts = models.ForeignKey(Part, on_delete=models.CASCADE)
     client = models.ForeignKey("client.Client", on_delete=models.CASCADE, null=True)
     weight = models.FloatField()
-    facture_price = models.IntegerField(null=True)
-    products = models.JSONField(default=dict)
+
+    @property
+    def delivery_price(self):
+        return self.parts.country.price_per * self.weight
+
+    @property
+    def facture_price(self):
+        return ProductInOrder.objects.filter(order=self).annotate(
+            _tp=ProductInOrder.annotate_total_price()
+        ).aggregate(_tp__sum=models.Sum("_tp")).get("_tp__sum")
 
     @classmethod
     def status_sql(cls):
@@ -121,10 +130,6 @@ class Order(models.Model):
         return 'create_time'
 
     @property
-    def delivery_price(self):
-        return self.parts.country.price_per * self.weight
-
-    @property
     def serialized_data(self):
         return {
             "shipmentId": str(self.id),
@@ -134,12 +139,12 @@ class Order(models.Model):
             "shipmentOrgStir": str(self.parts.country.org_stir),
             "shipmentCountryCode": str(self.parts.country.code),
             "shipmentCountry": str(self.parts.country.name),
-            "shipmentSendOrg": None,
-            "shipmentDepartureTime": self.departure_datetime.timestamp(),
-            "shipmentEnterUzb": self.enter_uzb_datetime.timestamp(),
-            "shipmentProcessCustoms": self.process_customs_datetime.timestamp(),
-            "shipmentProcessLocal": self.process_local_datetime.timestamp(),
-            "shipmentReceivedInd": self.process_received_datetime.timestamp(),
+            "shipmentSendOrg": str(self.parts.country.org_name),
+            "shipmentDepartureTime": self.departure_datetime.timestamp() if self.departure_datetime else None,
+            "shipmentEnterUzb": self.enter_uzb_datetime.timestamp() if self.enter_uzb_datetime else None,
+            "shipmentProcessCustoms": self.process_customs_datetime.timestamp() if self.process_customs_datetime else None,
+            "shipmentProcessLocal": self.process_local_datetime.timestamp() if self.process_local_datetime else None,
+            "shipmentReceivedInd": self.process_received_datetime.timestamp() if self.process_received_datetime else None,
         }
 
     def send_ws_data(self, user_id):
@@ -147,6 +152,30 @@ class Order(models.Model):
 
         send_data_to_session(user_id, OrderSerializer(self).data)
 
+    def send_api_customs_data(self):
+        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
+        _send_api_customs_data.delay([self.id], systems)
+
     def save(self, *args, **kwargs):
-        self.number = _generate_order_number(self)
+        if not self.number:
+            self.number = _generate_order_number(self)
         return super(Order, self).save(*args, **kwargs)
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    price = models.FloatField()
+
+
+class ProductInOrder(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.IntegerField()
+
+    @classmethod
+    def annotate_total_price(cls):
+        return models.F('product__price') * models.F('count')
+
+    @property
+    def total_price(self):
+        return self.product.price * self.count

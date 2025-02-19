@@ -12,10 +12,10 @@ class CountryAdmin(admin.ModelAdmin):
 class PartAdmin(admin.ModelAdmin):
     list_display = ['number', 'country']
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request, obj: Part, form, change):
         super().save_model(request, obj, form, change)
         if 'status' in form.changed_data:
-            obj.send_request()
+            obj.send_api_customs_data()
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

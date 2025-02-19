@@ -1,7 +1,14 @@
 from rest_framework import serializers
 
 from cargo.client.api_admin.serializers import ClientSerializer
-from cargo.order.models import Order, Part, Country
+from cargo.order.models import Order, Part, Country, ProductInOrder
+
+
+class ProductInOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductInOrder
+        fields = ['product', 'count']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -14,15 +21,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
+    products = ProductInOrderSerializer(many=True)
+
     class Meta:
         model = Order
-        exclude = [
-            "departure_datetime",
-            "enter_uzb_datetime",
-            "process_customs_datetime",
-            "process_local_datetime",
-            "process_received_datetime",
-        ]
+        fields = ['parts', 'client', 'weight', 'products']
 
 
 class CountrySerializer(serializers.ModelSerializer):

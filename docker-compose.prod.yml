@@ -7,7 +7,7 @@ services:
     build: ./api_onson_mail
     ports:
       - "7000:7000"
-    command: sh -c "python manage.py runserver 0.0.0.0:7000"
+    command: sh -c "daphne api_onson_mail.asgi:application -b 0.0.0.0 -p 7000"
     restart: always
     env_file:
       - ./api_onson_mail/.env
