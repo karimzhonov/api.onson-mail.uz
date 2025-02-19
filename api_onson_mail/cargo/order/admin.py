@@ -24,3 +24,9 @@ class OrderAdmin(admin.ModelAdmin):
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'
     ]
+    actions = ['send_api_customs_data']
+
+    def send_api_customs_data(self, request, queryset):
+        for order in queryset:
+            order.send_api_customs_data()
+

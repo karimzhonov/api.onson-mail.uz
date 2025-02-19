@@ -51,7 +51,7 @@ def _send_api_customs_data(order_ids, systems):
     success_data = []
     for order in Order.objects.select_related("parts", "parts__country", "client").filter(id__in=order_ids):
         json = order.serialized_data
-        response = api.create_or_update(order.id, json, systems)
+        response = api.create_or_update(json, systems)
         success_data.append({"id": str(order.id), "response": response.text, "status": response.status_code})
     return success_data
 
@@ -139,7 +139,7 @@ class Order(models.Model):
             "shipmentOrgStir": str(self.parts.country.org_stir),
             "shipmentCountryCode": str(self.parts.country.code),
             "shipmentCountry": str(self.parts.country.name),
-            "shipmentSendOrg": str(self.parts.country.org_name),
+            "shipmentSendOrg": str(self.parts.country.send_org),
             "shipmentDepartureTime": self.departure_datetime.timestamp() if self.departure_datetime else None,
             "shipmentEnterUzb": self.enter_uzb_datetime.timestamp() if self.enter_uzb_datetime else None,
             "shipmentProcessCustoms": self.process_customs_datetime.timestamp() if self.process_customs_datetime else None,

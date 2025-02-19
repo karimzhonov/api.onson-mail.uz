@@ -1,4 +1,5 @@
 import requests
+from uuid import uuid4
 from .token import get_token
 
 
@@ -14,11 +15,11 @@ class ApiPushService:
             'Content-Type': 'application/json',
         }
 
-    def create_or_update(self, pk, data: dict, systems:list[str]=None):
+    def create_or_update(self, data: dict, systems:list[str]=None):
         url = self.base_url + "/receive"
         headers = self._get_header()
         json = {
-            'correlationId': str(pk),
+            'correlationId': str(uuid4()),
             'data': data,
             'destinationSubscribers': systems
         }

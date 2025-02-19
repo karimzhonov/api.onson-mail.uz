@@ -1,10 +1,21 @@
 from django.core.management import BaseCommand
 from cargo.api_customs.egov import ApiPushService
-from cargo.order.models import Order, _send_api_customs_data
+from cargo.api_customs.models import System
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        api = ApiPushService()
-        order = Order.objects.first()
-        _send_api_customs_data([order.id], ['test_api-onson-mail-cargo'])
+        self.request_subscribers()
 
+    @staticmethod
+    def request_subscribers():
+        api = ApiPushService()
+        data = api.get_subscribers()
+        for d in data:
+            system, _ =System.objects.update_or_create({
+                "company_name": d.get("companyName"),
+                "system_name": d.get("systemName"),
+                "description": d.get("description"),
+                "status": d.get("status"),
+            }, system_name=d.get("systemName"))
+            print(system)

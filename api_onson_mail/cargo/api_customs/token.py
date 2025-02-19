@@ -40,7 +40,7 @@ class HS512TestAuthentication(JWTAuthentication):
         header = self.get_header(request)
         if header is None:
             return None
-
+        print(header)
         raw_token = self.get_raw_token(header)
         if raw_token is None:
             return None
