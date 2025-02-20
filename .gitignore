@@ -126,8 +126,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-*/private_key.pem
-*/public_key.pem
+*/*.pem
 static
 media
 .idea

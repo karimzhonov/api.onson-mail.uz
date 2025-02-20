@@ -35,25 +35,19 @@ class Part(models.Model):
     status = models.CharField("Статус", max_length=50, default=STATUSES[0][0], choices=STATUSES)
     date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-number']
+
     def __str__(self):
         return f"{self.number} - {self.country}"
 
     def send_api_customs_data(self):
-        Order.objects.filter(parts=self).update(**{self.status: timezone.now()})
-        order_ids = list(Order.objects.filter(parts=self).values_list('id', flat=True))
+        orders = Order.objects.filter(parts=self)
+        orders.update(**{self.status: timezone.now()})
+
         systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
-        _send_api_customs_data.delay(order_ids, systems=systems)
-
-
-@shared_task
-def _send_api_customs_data(order_ids, systems):
-    api = ApiPushService()
-    success_data = []
-    for order in Order.objects.select_related("parts", "parts__country", "client").filter(id__in=order_ids):
-        json = order.serialized_data
-        response = api.create_or_update(json, systems)
-        success_data.append({"id": str(order.id), "response": response.text, "status": response.status_code})
-    return success_data
+        for order in Order.objects.filter(parts=self):
+            order.send_api_customs_data(systems)
 
 
 def _number_to_string(n):
@@ -152,14 +146,24 @@ class Order(models.Model):
 
         send_data_to_session(user_id, OrderSerializer(self).data)
 
-    def send_api_customs_data(self):
-        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
-        _send_api_customs_data.delay([self.id], systems)
+    def send_api_customs_data(self, systems: list[str] = None):
+        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True)) \
+            if not systems else systems
+        _send_api_customs_data.delay(str(self.id), systems)
 
     def save(self, *args, **kwargs):
         if not self.number:
             self.number = _generate_order_number(self)
         return super(Order, self).save(*args, **kwargs)
+
+
+@shared_task(bind=True)
+def _send_api_customs_data(self, order_id, systems):
+    api = ApiPushService()
+    order = Order.objects.select_related("parts", "parts__country", "client").get(id=order_id)
+    json = order.serialized_data
+    response = api.create_or_update(self.request.id, json, systems)
+    return {"id": str(order.id), "response": response.text, "status": response.status_code, "data": json}
 
 
 class Product(models.Model):

@@ -6,18 +6,17 @@ from rest_framework.settings import api_settings
 from rest_framework.generics import get_object_or_404, GenericAPIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_celery_results.models import TaskResult
 from django.utils import timezone
 
-from cargo.order.models import Order
 from .filters import TaskResultFilter
 from .token import HS512TestAuthentication
 
 
 class MQTestView(GenericAPIView):
-    authentication_classes = (HS512TestAuthentication, TokenAuthentication)
+    authentication_classes = (HS512TestAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -26,7 +25,7 @@ class MQTestView(GenericAPIView):
 
 
 class MQTestReceiveView(GenericAPIView):
-    authentication_classes = (HS512TestAuthentication, TokenAuthentication)
+    authentication_classes = (HS512TestAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -47,33 +46,30 @@ mqview_schema = extend_schema_view(
 @mqview_schema
 class MQView(ListAPIView):
     filterset_class = TaskResultFilter
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    @staticmethod
-    def get_instance(request, *args, **kwargs):
+    def get_queryset(self):
+        return TaskResult.objects.filter(
+            task_name='cargo.order.models._send_api_customs_data',
+            status=states.SUCCESS
+        )
+
+    def get_instance(self ,request, *args, **kwargs):
         pk = request.query_params.get('correlationId')
-        instance: Order = get_object_or_404(Order.objects.all(), pk=pk)
+        instance: TaskResult = get_object_or_404(self.get_queryset(), task_id=pk)
+        data = json.loads(instance.result).get('data')
         now = timezone.now()
         return Response({
             "responseTime": now.strftime(api_settings.DATETIME_FORMAT),
             "correlationId": pk,
-            "data": instance.serialized_data
+            "data": data
         })
 
     def get_ids(self, request, *args, **kwargs):
-        tasks = TaskResult.objects.filter(
-            task_name='cargo.order.models._send_api_customs_data',
-            status=states.SUCCESS
-        )
-        ids = []
-        queryset = self.filter_queryset(tasks).values_list("result", flat=True)
-        for result in queryset:
-            result_json = json.loads(result)
-            for row in result_json:
-                if not row.get('id') in ids:
-                    ids.append(row.get('id'))
         now = timezone.now()
+        queryset = self.filter_queryset(self.get_queryset())
+        ids = queryset.values_list("task_id", flat=True)
         return Response({
             "date": request.query_params.get('date', now.date()),
             "responseTime": now.strftime(api_settings.DATETIME_FORMAT),

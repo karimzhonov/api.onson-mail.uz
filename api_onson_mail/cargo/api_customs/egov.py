@@ -15,11 +15,11 @@ class ApiPushService:
             'Content-Type': 'application/json',
         }
 
-    def create_or_update(self, data: dict, systems:list[str]=None):
+    def create_or_update(self, cid, data: dict, systems:list[str]=None):
         url = self.base_url + "/receive"
         headers = self._get_header()
         json = {
-            'correlationId': str(uuid4()),
+            'correlationId': cid,
             'data': data,
             'destinationSubscribers': systems
         }
@@ -40,6 +40,6 @@ class ApiPushService:
         return requests.get(url, headers=headers, verify=False).json()
 
     def get_statistic_pk(self, pk):
-        url = self.base_url + f"publisher/fetch-delivery-detailed-report/{pk}"
+        url = self.base_url + f"/publisher/fetch-delivery-detailed-report/{pk}"
         headers = self._get_header()
         return requests.get(url, headers=headers, verify=False).json()

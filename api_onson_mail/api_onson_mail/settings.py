@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_results',
     'rest_framework',
-    'rest_framework.authtoken',
     'corsheaders',
     'drf_spectacular',
     'phonenumber_field',
