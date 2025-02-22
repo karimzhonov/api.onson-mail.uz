@@ -7,6 +7,7 @@ class System(models.Model):
     description = models.TextField()
     status = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
+    company = models.ForeignKey("company.Company", models.CASCADE, null=True)
 
     def __str__(self):
         return self.company_name

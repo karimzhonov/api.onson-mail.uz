@@ -26,7 +26,7 @@ class UserAdmin(UserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
-                    "countries",
+                    "companies",
                 ),
             },
         ),

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from cargo.client.api_admin.serializers import ClientSerializer
-from cargo.order.models import Order, Part, Country, ProductInOrder
+from cargo.order.models import Order, Part, ProductInOrder
+from company.serializers import CountrySerializer
 
 
 class ProductInOrderSerializer(serializers.ModelSerializer):
@@ -27,12 +28,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['parts', 'client', 'weight', 'products']
 
-
-class CountrySerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Country
-        fields = ['name', 'code']
 
 
 class PartSerializer(serializers.ModelSerializer):

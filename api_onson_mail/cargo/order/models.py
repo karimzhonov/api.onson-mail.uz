@@ -17,21 +17,9 @@ STATUSES = (
 )
 
 
-class Country(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=10)
-    org_name = models.CharField(max_length=100)
-    org_stir = models.CharField(max_length=100)
-    send_org = models.CharField(max_length=100, blank=True, null=True)
-    price_per = models.FloatField()
-
-    def __str__(self):
-        return self.name
-
-
 class Part(models.Model):
     number = models.IntegerField(primary_key=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey("company.Country", on_delete=models.CASCADE)
     status = models.CharField("Статус", max_length=50, default=STATUSES[0][0], choices=STATUSES)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -45,9 +33,8 @@ class Part(models.Model):
         orders = Order.objects.filter(parts=self)
         orders.update(**{self.status: timezone.now()})
 
-        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True))
         for order in Order.objects.filter(parts=self):
-            order.send_api_customs_data(systems)
+            order.send_api_customs_data()
 
 
 def _number_to_string(n):
@@ -129,8 +116,8 @@ class Order(models.Model):
             "shipmentId": str(self.id),
             "shipmentNumber": str(self.number),
             "shipmentIdCreatTime": self.create_time.timestamp(),
-            "shipmentOrgName": str(self.parts.country.org_name),
-            "shipmentOrgStir": str(self.parts.country.org_stir),
+            "shipmentOrgName": str(self.parts.country.company.name),
+            "shipmentOrgStir": str(self.parts.country.company.stir),
             "shipmentCountryCode": str(self.parts.country.code),
             "shipmentCountry": str(self.parts.country.name),
             "shipmentSendOrg": str(self.parts.country.send_org),
@@ -147,9 +134,9 @@ class Order(models.Model):
         send_data_to_session(user_id, OrderSerializer(self).data)
 
     def send_api_customs_data(self, systems: list[str] = None):
-        systems = list(System.objects.filter(active=True).values_list("system_name", flat=True)) \
+        systems = list(System.objects.filter(active=True, company=self.parts.country.company).values_list("system_name", flat=True)) \
             if not systems else systems
-        _send_api_customs_data.delay(str(self.id), systems)
+        _send_api_customs_data.delay(str(self.id), systems, sub=self.parts.country.company.sub)
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -158,9 +145,9 @@ class Order(models.Model):
 
 
 @shared_task(bind=True)
-def _send_api_customs_data(self, order_id, systems):
-    api = ApiPushService()
-    order = Order.objects.select_related("parts", "parts__country", "client").get(id=order_id)
+def _send_api_customs_data(self, order_id, systems, sub):
+    order = Order.objects.select_related("parts", "parts__country", "client", "parts__country__company").get(id=order_id)
+    api = ApiPushService(sub, order.parts.country.company.private_key)
     json = order.serialized_data
     response = api.create_or_update(self.request.id, json, systems)
     return {"id": str(order.id), "response": response.text, "status": response.status_code, "data": json}

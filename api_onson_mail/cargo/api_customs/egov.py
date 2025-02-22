@@ -1,13 +1,12 @@
 import requests
-from uuid import uuid4
 from .token import get_token
 
 
 class ApiPushService:
     base_url = 'https://pushservice.egov.uz/v3/app/mq'
 
-    def __init__(self):
-        self.token = get_token()
+    def __init__(self, org_sub, private_key):
+        self.token = get_token(org_sub, private_key)
 
     def _get_header(self):
         return {

@@ -15,7 +15,7 @@ class User(AbstractUser):
     phone = PhoneNumberField(unique=True)
     opt = models.CharField(max_length=4, null=True, blank=True)
     opt_lia = models.DateTimeField(null=True, blank=True)
-    countries = models.ManyToManyField("order.Country", blank=True)
+    companies = models.ManyToManyField("company.Company", blank=True)
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
 

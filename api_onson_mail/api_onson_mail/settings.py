@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'jet',
     'oauth',
     'cargo',
+    'company',
     'cargo.order',
     'cargo.client',
     'cargo.api_customs',

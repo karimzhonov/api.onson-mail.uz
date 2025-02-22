@@ -52,7 +52,7 @@ class MQView(ListAPIView):
     def get_queryset(self):
         return TaskResult.objects.filter(
             task_name='cargo.order.models._send_api_customs_data',
-            status=states.SUCCESS
+            status=states.SUCCESS, task_kwargs__contains=self.kwargs.get('sub')
         )
 
     def get_instance(self ,request, *args, **kwargs):

@@ -7,27 +7,20 @@ from rest_framework_simplejwt.utils import aware_utcnow, datetime_to_epoch
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 
-try:
-    private_key = open(settings.BASE_DIR / 'private_key.pem', 'rb').read()
-    public_key = open(settings.BASE_DIR / 'public_key.pem', 'rb').read()
-except FileNotFoundError:
-    private_key = None
-    public_key = None
 
 
-def get_token():
+def get_token(sub, private_key):
     current_time = aware_utcnow()
     payload = {
-        'sub': 'api-onson-mail-cargo',
+        'sub': sub,
         'exp': datetime_to_epoch(current_time + timedelta(days=3)),
         'iat': datetime_to_epoch(current_time)
     }
     return jwt.encode(payload, private_key, algorithm='RS512')
 
 
-def decode_token(token, publickey=None):
-    publickey = publickey if publickey else public_key
-    return jwt.decode(token, publickey, algorithms=['RS512'])
+def decode_token(token, public_key):
+    return jwt.decode(token, public_key, algorithms=['RS512'])
 
 
 class HS512TestAuthentication(JWTAuthentication):

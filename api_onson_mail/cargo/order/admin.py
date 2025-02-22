@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from cargo.order.models import Order, Country, Part
-
-
-@admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code')
+from cargo.order.models import Order, Part
 
 
 @admin.register(Part)
