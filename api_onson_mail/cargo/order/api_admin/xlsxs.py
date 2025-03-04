@@ -3,8 +3,8 @@ from io import BytesIO
 from django.conf import settings
 import openpyxl.drawing
 import openpyxl.drawing.image
-from cargo.models import User
 from contrib.qrcode import generate_qrcode
+
 INPUT_PATH = settings.BASE_DIR / "cargo/order/xlsxs/invoice.xlsx"  # Укажите путь к исходному файлу
 
 
@@ -20,7 +20,7 @@ def _refactor_sheet(sheet, order, phones, start=0):
     sheet.cell(row=15 + start, column=3, value=order.client.address)
     sheet.cell(row=17 + start, column=3, value=order.client.passport)
     sheet.cell(row=17 + start, column=6, value=order.client.pnfl)
-    sheet.cell(row=19 + start, column=3, value=phones)
+    sheet.cell(row=19 + start, column=3, value=order.phone or phones)
 
     products = list(order.products.get("product_counts", {}).values())
     st = 22 + start
@@ -47,7 +47,7 @@ def _refactor_sheet(sheet, order, phones, start=0):
 
 
 def generate_invoice(order):
-    phones = ", ".join([str(p) for p in list(User.objects.filter(clients__in=[order.client]).values_list("user__phone", flat=True))])
+    phones = order.client.phones
     wb = openpyxl.load_workbook(INPUT_PATH)
     sheet = wb.active
 

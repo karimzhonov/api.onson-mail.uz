@@ -3,7 +3,7 @@ from import_export import resources
 
 from cargo.client.models import Client
 
-from .models import Order
+from .models import Order, Product
 
 
 class OrderResource(resources.ModelResource):
@@ -55,3 +55,11 @@ class OrderResource(resources.ModelResource):
             except ValueError:
                 raise ValidationError(message=f"{row.get('facture_price')} - invalid price")
         return super().import_field(field, instance, row, is_m2m, **kwargs)
+
+
+class ProductResource(resources.ModelResource):
+
+    class Meta:
+        model = Product
+        fields = ['name', 'price']
+        import_id_fields = ["name"]

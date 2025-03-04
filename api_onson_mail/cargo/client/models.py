@@ -9,6 +9,7 @@ class Client(models.Model):
     create_date = models.DateField(auto_now_add=True)
     token = models.JSONField(default=dict)
     myid_data = models.JSONField(default=dict)
+    created_user = models.ForeignKey('oauth.User', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.fio
@@ -16,3 +17,7 @@ class Client(models.Model):
     class Meta:
         verbose_name = 'Паспорт клиента'
         verbose_name_plural = 'Паспорта клиентов'
+
+    @property
+    def phones(self):
+        return ", ".join([str(p) for p in list(self.user_set.all().values_list("user__phone", flat=True))])

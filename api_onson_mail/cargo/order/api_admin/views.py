@@ -1,10 +1,10 @@
 from django.utils import timezone
 from rest_framework.decorators import action
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.response import Response
 from contrib.renderers import XLSXRenderer
 
-from ..models import Order, Part
+from ..models import Order, Part, Product
 from . import serializers
 from .xlsxs import generate_invoice
 from .filters import OrderFilter, PartFilter
@@ -26,7 +26,7 @@ class OrderViewSet(ModelViewSet):
         return super(OrderViewSet, self).get_renderers()
 
     def get_queryset(self):
-        return Order.objects.filter(parts__country__in=self.request.user.countries.all()).order_by("-create_time")
+        return Order.objects.filter(parts__country__company__in=self.request.user.companies.all()).order_by("-create_time")
 
     @action(detail=True, methods=['get'])
     def xlsx(self, request, pk=None):
@@ -62,4 +62,11 @@ class PartViewSet(ModelViewSet):
         return serializers.PartCreateSerializer
 
     def get_queryset(self):
-        return Part.objects.filter(country__in=self.request.user.countries.all()).order_by("-date")
+        return Part.objects.filter(country__company__in=self.request.user.companies.all()).order_by("-date")
+
+
+class ProductViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'head']
+    serializer_class = serializers.ProductSerializer
+    queryset = Product.objects.all()
+    search_fields = ['name']

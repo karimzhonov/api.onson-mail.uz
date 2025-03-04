@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'cargo.order',
     'cargo.client',
     'cargo.api_customs',
+    'icalendar',
+    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,7 +95,7 @@ AUTH_USER_MODEL='oauth.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
@@ -162,7 +164,8 @@ CELERY_TASK_RESULT_EXPIRES = 10 * 24 * 60 * 60
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         "rest_framework.permissions.IsAuthenticated",
-        "oauth.permissions.HasDjangoPermission",
+        # "oauth.permissions.HasDjangoPermission",
+        "company.permissions.CompanyPermission",
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

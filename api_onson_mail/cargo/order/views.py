@@ -14,6 +14,7 @@ class OrderByNumberView(RetrieveAPIView):
 
 
 class StatusView(RetrieveAPIView):
+    permission_classes = ()
 
     def retrieve(self, request, *args, **kwargs):
         statuses = dict(STATUSES)
