@@ -14,5 +14,4 @@ class CalendarView(ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        year_after = timezone.now() + timedelta(days=365)
-        return Day.objects.filter(date_time__lte=year_after)
+        return Day.objects.filter(date_time__date=timezone.now().date())
