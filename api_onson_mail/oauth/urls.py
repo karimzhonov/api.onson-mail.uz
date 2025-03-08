@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from .views import SignUpView, OptView, OptVerifyView, MeView
 
@@ -9,5 +9,6 @@ urlpatterns = [
     path('account/', SignUpView.as_view(), name='sign-up'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('me/', MeView.as_view())
+    path('me/', MeView.as_view()),
+    path('telegram/', include("oauth.telegram.urls")),
 ]

@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'jet',
     'oauth',
+    'oauth.telegram',
     'cargo',
     'company',
     'cargo.order',
