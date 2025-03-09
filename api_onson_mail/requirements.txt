@@ -29,3 +29,4 @@ qrcode==7.4.2
 daphne
 channels-redis
 djangochannelsrestframework==1.1.0
+django-webpush

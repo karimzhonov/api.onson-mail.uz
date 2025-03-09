@@ -26,6 +26,7 @@ urlpatterns = [
     path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/notification/', include('notification.urls')),
     path('api/calendar/', include('icalendar.urls')),
     path('api/cargo/', include('cargo.urls')),
     path('api/oauth/', include('oauth.urls')),

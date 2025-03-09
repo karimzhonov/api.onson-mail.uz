@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'cargo.api_customs',
     'icalendar',
     'import_export',
+    'webpush',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,6 +133,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+WEBPUSH_SETTINGS = {
+   "VAPID_PUBLIC_KEY": os.getenv('VAPID_PUBLIC_KEY'),
+   "VAPID_PRIVATE_KEY": os.getenv('VAPID_PRIVATE_KEY'),
+   "VAPID_ADMIN_EMAIL": "khtkarimzhonov@gmail.com"
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
