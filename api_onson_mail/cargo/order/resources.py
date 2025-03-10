@@ -1,42 +1,39 @@
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from import_export import resources
 
 from cargo.client.models import Client
 
-from .models import Order, Product
+from .models import Order, Product, ProductInOrder
 
 
 class OrderResource(resources.ModelResource):
-    # part = resources.Field("part__number")
-    # passport = resources.Field("client__passport", readonly=True)
-    number = resources.Field(column_name='1. Тижорат хужжатининг раками', attribute='number')
-    clientid = resources.Field(column_name='2. Халкаро курьерлик жунатмасининг жунатувчиси', attribute='clientid')
-    name = resources.Field(column_name='3. Халкаро курьерлик жунатмасининг кабул килувчиси ва унинг манзили', attribute='name')
-    client = resources.Field(column_name='4. Халкаро курьерликнинг жунатмасидаги товарларнинг кискача номи', attribute='client')
-    weight = resources.Field(column_name='5. Халкаро курьерлик жунатмасининг брутто вазни (кг)', attribute='weight')
-    facture_price = resources.Field(column_name='6. Халкаро курьерлик жунатмасининг фактура киймати', attribute='facture_price')
+    number = resources.Field(column_name='4', attribute='number')
+    client = resources.Field(column_name='5', attribute='client')
+    weight = resources.Field(column_name='13', attribute='weight')
+    products = resources.Field(column_name='12', attribute='products')
 
     class Meta:
         model = Order
-        exclude = ["products", "id", "with_online_buy"]
+        fields = "__all__"
         import_id_fields = ["number"]
 
-    def import_field(self, field, instance, row, is_m2m=False, **kwargs):
-        if field.attribute == 'part':
-            instance.part = kwargs.get('form_data').get('part')
-            return
-        if field.attribute == 'date':
-            instance.date = kwargs.get('form_data').get('date')
+    def import_field(self, field: resources.Field, instance, row, is_m2m=False, **kwargs):
+        if field.attribute == 'number':
+            instance.parts = kwargs.get('form_data').get('part')
+            instance.number = row.get(field.column_name)
             return
         if field.attribute == 'client':
-            try:
-                client = Client.objects.get(pnfl=row[field.column_name])
-            except Client.DoesNotExist:
-                client = Client.objects.create(
-                    pnfl=row[field.column_name],
-                    passport=row[field.column_name],
-                    fio=row[field.column_name],
-                )
+            client = Client.objects.filter(Q(pnfl=row.get('8')) | Q(passport=row.get('6')) | Q(passport=row.get('5'))).first()
+            if not row.get('6') or not row.get('8') or not row.get('5'): return
+            if not client:
+                client = Client.objects.create(**{
+                    "pnfl": row.get('8'),
+                    "passport": row.get('6'),
+                    "fio": row.get("5"),
+                    "address": row.get("10"),
+                    "created_user_id": kwargs.get('user').id
+                })
             instance.client = client
             return
         if field.attribute == 'weight':
@@ -47,14 +44,22 @@ class OrderResource(resources.ModelResource):
                 return
             except ValueError:
                 raise ValidationError(message=f"{row.get('weight')} - invalid weight")
-        if field.attribute == 'facture_price':
-            try:
-                facture_price = str(row.get(field.column_name))
-                facture_price = float(facture_price.replace(",", "."))
-                instance.facture_price = facture_price
-            except ValueError:
-                raise ValidationError(message=f"{row.get('facture_price')} - invalid price")
-        return super().import_field(field, instance, row, is_m2m, **kwargs)
+        if field.attribute == 'products':
+            products = str(row.get(field.column_name)).split(", ")
+            for product in products:
+                try:
+                    price = float(product.split(" ")[-1])
+                except ValueError:
+                    price = 0
+                p, c = Product.objects.get_or_create({"price": price}, name=product)
+                ProductInOrder.objects.create(
+                    order=instance, product=p, count=price
+                )
+            return
+        raise NotImplemented
+
+    def skip_row(self, instance: Order, *args, **kwargs):
+        if not instance.client: return True
 
 
 class ProductResource(resources.ModelResource):

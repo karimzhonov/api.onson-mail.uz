@@ -1,16 +1,15 @@
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from .models import Order, STATUSES
 from .serializers import OrderSerializer
 
 
-class OrderByNumberView(RetrieveAPIView):
-    lookup_field = 'number'
-    lookup_url_kwarg = 'number'
+class OrderViewSet(ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
-    queryset = Order.objects.all()
-    permission_classes = ()
-    authentication_classes = ()
+    
+    def get_queryset(self):
+        return Order.objects.filter(client__in=self.request.user.cargo.clients.all())
 
 
 class StatusView(RetrieveAPIView):

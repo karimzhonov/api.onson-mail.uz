@@ -1,9 +1,12 @@
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import OrderViewSet, StatusView
 
-from .views import OrderByNumberView, StatusView
+router = DefaultRouter()
+router.register('order', OrderViewSet, '')
 
 urlpatterns = [
-    path('order/<number>/', OrderByNumberView.as_view()),
+    path('', include(router.urls)),
     path('status/', StatusView.as_view()),
     path('admin/', include("cargo.order.api_admin.urls")),
 ]

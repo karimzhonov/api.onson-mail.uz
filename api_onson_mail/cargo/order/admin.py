@@ -1,7 +1,9 @@
 from django.contrib import admin
 from import_export.admin import ImportMixin
 from cargo.order.models import Order, Part, ProductInOrder, Product
-from .resources import ProductResource
+from .resources import ProductResource, OrderResource
+from .formats import OrderXLSX
+from .forms import OrderConfirmImportForm, OrderImportForm
 
 
 @admin.register(Part)
@@ -18,7 +20,7 @@ class ProductInOrderTabular(admin.TabularInline):
     extra = 0
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ImportMixin, admin.ModelAdmin):
     list_display = ['number', 'client', 'parts']
     readonly_fields = [
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
@@ -27,9 +29,27 @@ class OrderAdmin(admin.ModelAdmin):
     actions = ['send_api_customs_data']
     inlines = [ProductInOrderTabular]
 
+    import_form_class = OrderImportForm
+    confirm_form_class = OrderConfirmImportForm
+    resource_classes = [OrderResource]
+    # form = OrderForm
+    skip_admin_log = True
+    formats = [OrderXLSX]
+
     def send_api_customs_data(self, request, queryset):
         for order in queryset:
             order.send_api_customs_data()
+
+    def get_confirm_form_initial(self, request, import_form):
+        initial = super().get_confirm_form_initial(request, import_form)
+        if import_form is None:
+            return initial
+        initial["part"] = request.POST.get("part")
+        return initial
+    
+    def get_import_data_kwargs(self, request, *args, **kwargs):
+        kwargs.update(form_data=kwargs.get("form").cleaned_data)
+        return super().get_import_data_kwargs(request, *args, **kwargs)
 
 @admin.register(Product)
 class ProductAdmin(ImportMixin, admin.ModelAdmin):

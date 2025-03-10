@@ -2,7 +2,7 @@ from django.db import models
 
 
 class User(models.Model):
-    user = models.OneToOneField("oauth.User", on_delete=models.CASCADE)
+    user = models.OneToOneField("oauth.User", on_delete=models.CASCADE, related_name="cargo")
     clients = models.ManyToManyField("client.Client")
 
     @property
