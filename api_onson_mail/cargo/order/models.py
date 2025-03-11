@@ -108,7 +108,7 @@ class Order(models.Model):
             return 'process_customs_datetime'
         elif self.enter_uzb_datetime:
             return 'enter_uzb_datetime'
-        if self.departure_datetime:
+        elif self.departure_datetime:
             return 'departure_datetime'
         return 'create_time'
 

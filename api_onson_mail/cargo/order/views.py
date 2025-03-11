@@ -3,10 +3,11 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from .models import Order, STATUSES
 from .serializers import OrderSerializer
-
+from .filters import OrderFilter
 
 class OrderViewSet(ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
+    filterset_class = OrderFilter
     
     def get_queryset(self):
         return Order.objects.filter(client__in=self.request.user.cargo.clients.all())

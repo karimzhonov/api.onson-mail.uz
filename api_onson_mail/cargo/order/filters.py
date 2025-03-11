@@ -3,17 +3,17 @@ from cargo.order.models import Order, Part
 
 
 class OrderFilter(filters.FilterSet):
-    status_ = filters.CharFilter(method='filter_status_')
+    status_sql = filters.BaseInFilter(method='filter_status_')
 
     class Meta:
         model = Order
-        fields = ['parts', 'status_']
+        fields = ['parts', 'status_sql']
 
     def filter_status_(self, queryset, name, value):
         queryset = queryset.annotate(
-            status_=Order.status_sql()
+            status_sql=Order.status_sql()
         )
-        return queryset.filter(status_=value)
+        return queryset.filter(status_sql__in=value)
 
 
 class PartFilter(filters.FilterSet):

@@ -7,7 +7,7 @@ from contrib.renderers import XLSXRenderer
 from ..models import Order, Part, Product
 from . import serializers
 from .xlsxs import generate_invoice
-from .filters import OrderFilter, PartFilter
+from ..filters import OrderFilter, PartFilter
 
 
 class OrderViewSet(ModelViewSet):
