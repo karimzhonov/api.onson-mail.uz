@@ -22,6 +22,7 @@ class ProductInOrderTabular(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(ImportMixin, admin.ModelAdmin):
     list_display = ['number', 'client', 'parts']
+    list_filter = ['client', 'parts']
     readonly_fields = [
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'
