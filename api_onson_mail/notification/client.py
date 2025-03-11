@@ -1,4 +1,5 @@
 from webpush import send_user_notification
+from .models import Notification
 
 
 def send_notification(user, text, url):
@@ -8,4 +9,5 @@ def send_notification(user, text, url):
         "icon": "/logo.png",
         "tag": url
     }
-    return send_user_notification(user=user, payload=data, ttl=1000)
+    send_user_notification(user=user, payload=data, ttl=1000)
+    return Notification.objects.create(user=user, data=data)

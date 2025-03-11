@@ -1,6 +1,7 @@
 from django.db.transaction import atomic
 from rest_framework import serializers
 from webpush.models import SubscriptionInfo, PushInformation
+from .models import Notification
 
 
 class SubscriptionInfoSerializer(serializers.ModelSerializer):
@@ -27,3 +28,10 @@ class SaveWebPushInformationSerializer(serializers.ModelSerializer):
         serializer.save()
         validated_data['subscription'] = serializer.instance
         return super().create(validated_data)
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notification
+        fields = "__all__"

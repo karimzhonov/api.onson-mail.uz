@@ -1,7 +1,8 @@
-from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
-from .serializers import SaveWebPushInformationSerializer
 from webpush.models import PushInformation
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.response import Response
+from .serializers import SaveWebPushInformationSerializer, NotificationSerializer
+from .models import Notification
 
 
 class SaveWebPushInformationView(CreateAPIView):
@@ -16,3 +17,16 @@ class SaveWebPushInformationView(CreateAPIView):
             serializer.save()
             return Response(serializer.data)
         return super().create(request, *args, **kwargs)
+    
+
+class NotificationView(ListAPIView):
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
+
+    def get_paginated_response(self, data):
+        response = super().get_paginated_response(data)
+        response.data['unread'] = self.get_queryset().filter(read=False).count()
+        return response
+    

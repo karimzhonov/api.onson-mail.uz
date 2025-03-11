@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'cargo.order',
     'cargo.client',
     'cargo.api_customs',
+    'notification', 
     'icalendar',
     'import_export',
     'webpush',
