@@ -6,3 +6,4 @@ class Notification(models.Model):
     user = models.ForeignKey(get_user_model(), models.CASCADE)
     data = models.JSONField(default=dict)
     read = models.BooleanField(default=False)
+    url = models.CharField(max_length=255, blank=True, null=True)

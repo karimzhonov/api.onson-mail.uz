@@ -1,5 +1,5 @@
 from webpush.models import PushInformation
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from .serializers import SaveWebPushInformationSerializer, NotificationSerializer
 from .models import Notification
@@ -20,7 +20,13 @@ class SaveWebPushInformationView(CreateAPIView):
     
 
 class NotificationView(ListAPIView):
+    http_method_names = ['get', 'patch']
     serializer_class = NotificationSerializer
+
+    def patch(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        queryset.update(read=True)
+        return Response({})
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user)
@@ -30,3 +36,15 @@ class NotificationView(ListAPIView):
         response.data['unread'] = self.get_queryset().filter(read=False).count()
         return response
     
+
+class NotificationReadView(UpdateAPIView):
+    http_method_names = ['patch']
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        instance: Notification = self.get_object()
+        instance.read = True
+        instance.save()
+        return Response(NotificationSerializer(instance).data)
