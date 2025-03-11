@@ -39,6 +39,8 @@ class NotificationView(ListAPIView):
 
 class NotificationReadView(UpdateAPIView):
     http_method_names = ['patch']
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user)
