@@ -6,6 +6,7 @@ from django.utils import timezone
 from cargo.api_customs.egov import ApiPushService
 from cargo.api_customs.models import System
 from .api_admin.consumers import send_data_to_session
+from .notifications import send_my_order_status
 
 STATUSES = (
     ('create_time', 'Cоздан'),
@@ -139,6 +140,9 @@ class Order(models.Model):
         systems = list(System.objects.filter(active=True, company=self.parts.country.company).values_list("system_name", flat=True)) \
             if not systems else systems
         _send_api_customs_data.delay(str(self.id), systems, sub=self.parts.country.company.sub)
+
+    def send_notification_my_order_status(self):
+        return send_my_order_status(self)
 
     def save(self, *args, **kwargs):
         if not self.number:

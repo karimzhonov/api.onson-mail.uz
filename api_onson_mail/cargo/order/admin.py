@@ -27,7 +27,7 @@ class OrderAdmin(ImportMixin, admin.ModelAdmin):
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'
     ]
-    actions = ['send_api_customs_data']
+    actions = ['send_api_customs_data', 'send_notification_my_order_status']
     inlines = [ProductInOrderTabular]
 
     import_form_class = OrderImportForm
@@ -40,6 +40,10 @@ class OrderAdmin(ImportMixin, admin.ModelAdmin):
     def send_api_customs_data(self, request, queryset):
         for order in queryset:
             order.send_api_customs_data()
+
+    def send_notification_my_order_status(self, request, queryset):
+        for order in queryset:
+            order.send_notification_my_order_status()
 
     def get_confirm_form_initial(self, request, import_form):
         initial = super().get_confirm_form_initial(request, import_form)
