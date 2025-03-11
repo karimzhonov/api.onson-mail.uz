@@ -1,4 +1,5 @@
 from webpush.models import PushInformation
+from django.utils import timezone
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from .serializers import SaveWebPushInformationSerializer, NotificationSerializer
@@ -19,17 +20,17 @@ class SaveWebPushInformationView(CreateAPIView):
         return super().create(request, *args, **kwargs)
     
 
-class NotificationView(ListAPIView):
+class NotificationView(ListAPIView, UpdateAPIView):
     http_method_names = ['get', 'patch']
     serializer_class = NotificationSerializer
 
     def patch(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        queryset.update(read=True)
+        queryset = self.get_queryset().filter(read=False)
+        queryset.update(read=True, read_at=timezone.now())
         return Response({})
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        return Notification.objects.filter(user=self.request.user).order_by('-created')
 
     def get_paginated_response(self, data):
         response = super().get_paginated_response(data)
@@ -48,5 +49,6 @@ class NotificationReadView(UpdateAPIView):
     def update(self, request, *args, **kwargs):
         instance: Notification = self.get_object()
         instance.read = True
+        instance.read_at = timezone.now()
         instance.save()
         return Response(NotificationSerializer(instance).data)

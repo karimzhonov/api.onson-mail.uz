@@ -7,3 +7,5 @@ class Notification(models.Model):
     data = models.JSONField(default=dict)
     read = models.BooleanField(default=False)
     url = models.CharField(max_length=255, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(blank=True, null=True)
