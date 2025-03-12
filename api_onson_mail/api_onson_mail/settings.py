@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'icalendar',
     'import_export',
     'webpush',
+    'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

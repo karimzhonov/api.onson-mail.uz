@@ -1,10 +1,12 @@
 from rest_framework import serializers
+from ..client.serializers import ClientSerializer
 from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
     fio = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    client = ClientSerializer()
 
     class Meta:
         model = Order
