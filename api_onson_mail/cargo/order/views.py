@@ -10,7 +10,8 @@ class OrderViewSet(ReadOnlyModelViewSet):
     filterset_class = OrderFilter
     
     def get_queryset(self):
-        return Order.objects.filter(client__in=self.request.user.cargouser.clients.all())
+        clients = self.request.user.cargouser.clients.all() if hasattr(self.request.user, 'cargouser') else []
+        return Order.objects.filter(client__in=clients)
 
 
 class StatusView(RetrieveAPIView):
