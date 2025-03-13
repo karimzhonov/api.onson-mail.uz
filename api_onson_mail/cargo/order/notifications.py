@@ -1,5 +1,5 @@
 from notification.client import send_notification
-from cargo.models import User
+from cargo.models import CargoUser
 
 
 ORDER_STATUS_TEXT = (
@@ -13,6 +13,6 @@ ORDER_STATUS_TEXT = (
 
 
 def send_my_order_status(order):
-    users = User.objects.filter(clients__in=[order.client])
+    users = CargoUser.objects.filter(clients__in=[order.client])
     text = dict(ORDER_STATUS_TEXT)[order.status].format(number=order.number)
     return [send_notification(user.user, text, '/order?id={id}'.format(id=order.id)) for user in users]
