@@ -6,4 +6,4 @@ class ClientViewSet(ReadOnlyModelViewSet):
     serializer_class = ClientSerializer
 
     def get_queryset(self):
-        return self.request.user.cargo.clients.all()
+        return self.request.user.cargouser.clients.all()
