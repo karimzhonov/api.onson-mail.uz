@@ -1,5 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportMixin
+from jet.filters import RelatedFieldAjaxListFilter
 from cargo.order.models import Order, Part, ProductInOrder, Product
 from .resources import ProductResource, OrderResource
 from .formats import OrderXLSX
@@ -22,7 +23,7 @@ class ProductInOrderTabular(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(ImportMixin, admin.ModelAdmin):
     list_display = ['number', 'client', 'parts']
-    list_filter = ['client', 'parts']
+    list_filter = [('client', RelatedFieldAjaxListFilter), 'parts']
     readonly_fields = [
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'

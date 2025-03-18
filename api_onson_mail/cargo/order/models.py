@@ -1,6 +1,7 @@
 import uuid
 import string
 from celery import shared_task
+from django.conf import settings
 from django.contrib.gis.db import models
 from django.utils import timezone
 from cargo.api_customs.egov import ApiPushService
@@ -33,9 +34,10 @@ class Part(models.Model):
     def send_api_customs_data(self):
         orders = Order.objects.filter(parts=self)
         orders.update(**{self.status: timezone.now()})
-
+        if settings.DEBUG: return
         for order in Order.objects.filter(parts=self):
             order.send_api_customs_data()
+            order.send_notification_my_order_status()
 
 
 def _number_to_string(n):

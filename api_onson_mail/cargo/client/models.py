@@ -21,3 +21,7 @@ class Client(models.Model):
     @property
     def phones(self):
         return ", ".join([str(p) for p in list(self.user_set.all().values_list("user__phone", flat=True))])
+    
+    @staticmethod
+    def autocomplete_search_fields():
+        return 'passport', 'pnfl', 'fio'
