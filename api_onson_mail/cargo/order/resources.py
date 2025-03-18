@@ -45,6 +45,7 @@ class OrderResource(resources.ModelResource):
             except ValueError:
                 raise ValidationError(message=f"{row.get('weight')} - invalid weight")
         if field.attribute == 'products':
+            instance.save()
             products = str(row.get(field.column_name)).split(", ")
             for product in products:
                 try:
@@ -57,10 +58,6 @@ class OrderResource(resources.ModelResource):
                 )
             return
         raise NotImplemented
-
-    def import_obj(self, obj, data, dry_run, **kwargs):
-        obj.save()
-        return super().import_obj(obj, data, dry_run, **kwargs)
 
     def skip_row(self, instance: Order, *args, **kwargs):
         if not instance.client: return True
