@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from cargo.client.serializers import ClientSerializer
 from oauth.serializers import UserShortSerializer
-from .models import User
+from .models import CargoUser
 
 
 class MeSerializer(serializers.ModelSerializer):
@@ -9,5 +9,5 @@ class MeSerializer(serializers.ModelSerializer):
     clients = ClientSerializer(many=True)
 
     class Meta:
-        model = User
+        model = CargoUser
         fields = ["user", "clients"]

@@ -8,7 +8,7 @@ from django.core.files.base import File
 from django.contrib.auth.hashers import make_password
 from phonenumber_field.phonenumber import PhoneNumber
 from cargo.order.old import OrdersPart, UsersClient, OrdersOrder
-from cargo.models import User as CargoUser
+from cargo.models import CargoUser
 from cargo.order import models
 from cargo.client.models import Client
 from oauth.models import User
