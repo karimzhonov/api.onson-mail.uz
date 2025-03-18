@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import CompanyView
+from .views import CompanyView, CountryView
 
 urlpatterns = [
-    path('company/', CompanyView.as_view())
+    path('', CompanyView.as_view()),
+    path('<slug>/country/', CountryView.as_view())
 ]

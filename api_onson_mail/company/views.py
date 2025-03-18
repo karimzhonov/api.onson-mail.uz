@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
-
-from .serializers import CompanySerializer
+from .models import Country
+from .serializers import CompanySerializer, CountrySerializer
 
 
 class CompanyView(ListAPIView):
@@ -11,3 +11,13 @@ class CompanyView(ListAPIView):
 
     def get_queryset(self):
         return self.request.user.companies.all()
+
+
+class CountryView(ListAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = CountrySerializer
+
+    def get_queryset(self):
+        return Country.objects.filter(company__sub=self.kwargs.get('slug'))
+    

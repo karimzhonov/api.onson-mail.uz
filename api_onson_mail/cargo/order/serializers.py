@@ -30,6 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductInOrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
+    total_price = serializers.FloatField()
 
     class Meta:
         model = ProductInOrder

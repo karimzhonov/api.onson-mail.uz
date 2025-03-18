@@ -14,4 +14,4 @@ class CountrySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Country
-        fields = ['name', 'code']
+        fields = ['name', 'code', 'price_per']
