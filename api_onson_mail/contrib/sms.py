@@ -13,7 +13,7 @@ def send_sms(phone: str, text: str):
             {"phone": phone, "text": text}
         ], ensure_ascii=False, indent=2)
     }
-    return requests.post(url, json=data).json(encoding='utf-8')
+    return requests.post(url, json=data).json()
 
 
 def send_list_sms(data: list[dict[str: str]]):

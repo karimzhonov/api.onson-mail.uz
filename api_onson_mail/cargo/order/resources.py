@@ -58,6 +58,10 @@ class OrderResource(resources.ModelResource):
             return
         raise NotImplemented
 
+    def import_obj(self, obj, data, dry_run, **kwargs):
+        obj.save()
+        return super().import_obj(obj, data, dry_run, **kwargs)
+
     def skip_row(self, instance: Order, *args, **kwargs):
         if not instance.client: return True
 
