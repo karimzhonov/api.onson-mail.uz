@@ -13,7 +13,7 @@ class ClientViewSet(ModelViewSet):
     def get_queryset(self):
         return self.request.user.cargouser.clients.all() if hasattr(self.request.user, 'cargouser') else Client.objects.none()
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         pnfl = request.data.get("pnfl")
         client = get_object_or_404(Client, pnfl=pnfl)
         cargouser, _ = CargoUser.objects.get_or_create(user=request.user)
