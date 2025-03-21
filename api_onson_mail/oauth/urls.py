@@ -11,4 +11,5 @@ urlpatterns = [
     path('verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('me/', MeView.as_view()),
     path('telegram/', include("oauth.telegram.urls")),
+    path('google_auth/', include("oauth.google_auth.urls")),
 ]

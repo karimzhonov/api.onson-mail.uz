@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'jet',
     'oauth',
     'oauth.telegram',
+    'oauth.google_auth',
     'cargo',
     'company',
     'cargo.order',
