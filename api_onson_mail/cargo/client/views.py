@@ -15,7 +15,7 @@ class ClientViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         pnfl = request.data.get("pnfl")
-        request.data.update(created_user=self.request.user)
+        request.data.update(created_user=self.request.user.id)
         client = Client.objects.filter(pnfl=pnfl).first()
         if client:
             serializer = ClientSerializer(client, request.data, partial=True)
