@@ -15,7 +15,15 @@ class ClientViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         pnfl = request.data.get("pnfl")
-        client = get_object_or_404(Client, pnfl=pnfl)
+        request.data.update(created_user=self.request.user)
+        client = Client.objects.filter(pnfl=pnfl).first()
+        if client:
+            serializer = ClientSerializer(client, request.data, partial=True)
+        else:
+            serializer = ClientSerializer(data=request.data)
+        serializer.is_valid(True)
+        serializer.save()
         cargouser, _ = CargoUser.objects.get_or_create(user=request.user)
-        cargouser.clients.add(client)
+        if not cargouser.clients.filter(id=serializer.instance.id).exists():
+            cargouser.clients.add(serializer.instance)
         return Response({}, 200)
