@@ -7,6 +7,6 @@ class CargoUser(models.Model):
 
     @property
     def username(self):
-        return f"u{self.user.phone.national_number}"
+        return f"u{self.id}"
 
     

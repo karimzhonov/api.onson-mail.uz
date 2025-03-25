@@ -14,7 +14,7 @@ class PartAdmin(admin.ModelAdmin):
     def save_model(self, request, obj: Part, form, change):
         super().save_model(request, obj, form, change)
         if 'status' in form.changed_data:
-            obj.send_api_customs_data()
+            obj.change_status()
 
 class ProductInOrderTabular(admin.TabularInline):
     model = ProductInOrder

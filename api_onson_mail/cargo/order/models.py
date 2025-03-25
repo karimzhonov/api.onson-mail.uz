@@ -31,7 +31,7 @@ class Part(models.Model):
     def __str__(self):
         return f"{self.number} - {self.country}"
 
-    def send_api_customs_data(self):
+    def change_status(self):
         orders = Order.objects.filter(parts=self)
         orders.update(**{self.status: timezone.now()})
         if settings.DEBUG: return
