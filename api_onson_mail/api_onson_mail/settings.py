@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'import_export',
     'webpush',
     'parler',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -237,17 +238,22 @@ X_FRAME_OPTIONS = 'ALLOWALL'
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://onson-mail.uz", "https://admin.onson-mail.uz", "https://api.onson-mail.uz"]
 
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
-MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_FILE_OVERWRITE = False
-AWS_S3_REGION_NAME = 'ru-1'
-AWS_S3_SIGNATURE_VERSION = 's3'
-AWS_DEFAULT_ACL = 'public-read'  # делает загружаемые файлы доступными по URL
-AWS_QUERYSTRING_AUTH = False     # убирает временные токены в ссылке .url
+if os.getenv('USE_S3', False):
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
+    
+    # MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_REGION_NAME = 'ru-1'
+    AWS_S3_SIGNATURE_VERSION = 's3'
+    AWS_DEFAULT_ACL = 'public-read'  # делает загружаемые файлы доступными по URL
+    AWS_QUERYSTRING_AUTH = False     # убирает временные токены в ссылке .url
+else:
+    MEDIA_URL = 'media/'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 STATIC_URL = 'static/'
 MEDIA_ROOT = BASE_DIR / '../media'
