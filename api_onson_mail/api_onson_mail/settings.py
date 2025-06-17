@@ -242,7 +242,7 @@ if os.getenv('USE_S3', False):
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
-    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/${AWS_STORAGE_BUCKET_NAME}/media/'
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_REGION_NAME = 'ru-1'
