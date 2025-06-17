@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
-from .jet_conf import *
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,7 +34,14 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'jet',
+    "modeltranslation",
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
+
     'oauth',
     'oauth.telegram',
     'oauth.google_auth',
@@ -46,9 +52,8 @@ INSTALLED_APPS = [
     'cargo.api_customs',
     'notification', 
     'icalendar',
-    'import_export',
-    'webpush',
-    'django.contrib.gis',
+    'tourism',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,6 +65,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'phonenumber_field',
+    'simple_history',
+    'import_export',
+    'webpush',
+    'parler',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'api_onson_mail.urls'
@@ -100,7 +110,7 @@ AUTH_USER_MODEL='oauth.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
@@ -146,6 +156,15 @@ WEBPUSH_SETTINGS = {
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'ru'
+
+LANGUAGES = [
+    ('ru', "Руский 🇷🇺"),
+    ('uz', "Узбекча 🇺🇿"),
+]
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'ru'
+MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'ru'
+
 
 TIME_ZONE = 'Asia/Tashkent'
 
@@ -243,5 +262,63 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [(os.getenv("REDIS_HOST", "localhost"), 6379)],
         },
+    },
+}
+
+UNFOLD = {
+    "SITE_TITLE": "Onson Mail Admin",
+    "SITE_HEADER": "Onson Mail Admin",
+    "SITE_SUBHEADER": "onson-mail.uz",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "speed",  # symbol from icon set
+    "SHOW_HISTORY": True, # show/hide "History" button, default: True
+    "SHOW_VIEW_ON_SITE": True, # show/hide "View on site" button, default: True
+    "SHOW_BACK_BUTTON": True, # show/hide "Back" button on changeform in header, default: False
+    "ENVIRONMENT": ["Development" , "info"] if DEBUG else ["Production" , "danger"], # environment name in header
+    "BORDER_RADIUS": "6px",
+    "COLORS": {
+        "base": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+        "primary": {
+            "50": "250 245 255",
+            "100": "243 232 255",
+            "200": "233 213 255",
+            "300": "216 180 254",
+            "400": "192 132 252",
+            "500": "168 85 247",
+            "600": "147 51 234",
+            "700": "126 34 206",
+            "800": "107 33 168",
+            "900": "88 28 135",
+            "950": "59 7 100",
+        },
+        "font": {
+            "subtle-light": "var(--color-base-500)",  # text-base-500
+            "subtle-dark": "var(--color-base-400)",  # text-base-400
+            "default-light": "var(--color-base-600)",  # text-base-600
+            "default-dark": "var(--color-base-300)",  # text-base-300
+            "important-light": "var(--color-base-900)",  # text-base-900
+            "important-dark": "var(--color-base-100)",  # text-base-100
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": dict(LANGUAGES),
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,  # Search in applications and models names
+        "show_all_applications": True,  # Dropdown with all applications and models
     },
 }

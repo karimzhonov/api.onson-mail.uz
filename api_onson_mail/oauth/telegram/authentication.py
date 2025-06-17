@@ -26,13 +26,13 @@ def validate(auth_data):
     if hash_value != check_hash:
         raise AuthenticationFailed(
             _("Given token not valid for any token type"),
-            code='bat_token'
+            code='bot_token'
         )
 
     if (timezone.now().timestamp() - auth_data['auth_date']) > 86400:
         raise AuthenticationFailed(
             _("Given token not valid for any token type"),
-            code='bat_token'
+            code='bot_token'
         )
     
     return auth_data 

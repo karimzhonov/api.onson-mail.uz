@@ -2,7 +2,7 @@ import uuid
 import string
 from celery import shared_task
 from django.conf import settings
-from django.contrib.gis.db import models
+from django.db import models
 from django.utils import timezone
 from cargo.api_customs.egov import ApiPushService
 from cargo.api_customs.models import System
@@ -78,7 +78,6 @@ class Order(models.Model):
     client = models.ForeignKey("client.Client", on_delete=models.CASCADE, null=True)
     weight = models.FloatField()
     phone = models.CharField(max_length=255, blank=True, null=True)
-    delivery_point = models.PointField(blank=True, null=True)
 
     @property
     def delivery_price(self):

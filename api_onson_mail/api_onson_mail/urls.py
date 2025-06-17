@@ -22,12 +22,11 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls),
-    path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
-    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/calendar/', include('icalendar.urls')),
     path('api/oauth/', include('oauth.urls')),
+    path('api/tourism/', include('tourism.urls')),
 
     path('api/company/', include('company.urls')),
     path('api/notification/', include('notification.urls')),
