@@ -247,6 +247,8 @@ if os.getenv('USE_S3', False):
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_REGION_NAME = 'ru-1'
     AWS_S3_SIGNATURE_VERSION = 's3'
+    AWS_DEFAULT_ACL = 'public-read'  # делает загружаемые файлы доступными по URL
+    AWS_QUERYSTRING_AUTH = False     # убирает временные токены в ссылке .url
 else:
     MEDIA_URL = 'media/'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
