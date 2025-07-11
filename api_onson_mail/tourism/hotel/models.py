@@ -56,7 +56,8 @@ class Hotel(models.Model):
 class HotelFood(models.Model):
     hotel = models.ForeignKey(Hotel, models.CASCADE)
     food = models.ForeignKey("tourism.Food", models.PROTECT)
-    price = models.FloatField(blank=True, null=True)
+    price_b2b = models.FloatField(blank=True, null=True)
+    price_b2c = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -68,7 +69,8 @@ class HotelFood(models.Model):
 class HotelRoom(models.Model):
     hotel = models.ForeignKey(Hotel, models.CASCADE)
     room = models.ForeignKey(HotelRoomType, models.PROTECT)
-    price = models.FloatField()
+    price_b2b = models.FloatField(blank=True, null=True)
+    price_b2c = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     free_rooms = models.IntegerField(null=True, blank=True)
@@ -83,7 +85,8 @@ class HotelRoom(models.Model):
 class HotelService(models.Model):
     hotel = models.ForeignKey(Hotel, models.CASCADE)
     service = models.ForeignKey(HotelServiceType, models.PROTECT)
-    price = models.FloatField(blank=True, null=True)
+    price_b2b = models.FloatField(blank=True, null=True)
+    price_b2c = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
