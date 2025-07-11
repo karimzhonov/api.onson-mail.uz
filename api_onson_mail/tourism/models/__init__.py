@@ -1,7 +1,6 @@
 import calendar
 from django.db import models
 
-from .hotel import Hotel, HotelType
 from .others import Food, Type, Service
 from .region import Country, Region
 
@@ -53,7 +52,7 @@ class Day(models.Model):
     title = models.CharField("Название", max_length=255, null=True)
     desc = models.TextField("Описание", max_length=3000, null=True)
     image = models.ImageField("Фото", upload_to='tour/day', null=True)
-    hotel = models.ForeignKey(Hotel, models.PROTECT, null=True)
+    hotel = models.ForeignKey("hotel.Hotel", models.PROTECT, null=True)
 
     class Meta:
         ordering = ['day']

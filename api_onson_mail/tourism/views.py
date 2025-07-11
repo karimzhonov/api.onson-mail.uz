@@ -1,23 +1,9 @@
 from django.db.models import OuterRef, Subquery
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from .filters import RegionFilter, TourFilter, CountryFilter, HotelFilter
-from .models import Type, Region, Tour, Price, Food, Hotel, HotelType, Country, Service
-from .serializers import TypeSerializer, RegionSerializer, ServiceSerializer, TourSerializer, TourListSerializer, CountrySerializer, HotelTypeSerializer, HotelSerializer, FoodSerializer
-
-
-class HotelTypeViewSet(ReadOnlyModelViewSet):
-    serializer_class = HotelTypeSerializer
-    queryset = HotelType.objects.all()
-    authentication_classes = ()
-    permission_classes = ()
-
-
-class HotelViewSet(ReadOnlyModelViewSet):
-    serializer_class = HotelSerializer
-    queryset = Hotel.objects.all()
-    filterset_class = HotelFilter
-    authentication_classes = ()
-    permission_classes = ()
+from .filters import RegionFilter, TourFilter, CountryFilter
+from .models import Type, Region, Tour, Price, Food, Country, Service
+from .serializers.tour import TypeSerializer, ServiceSerializer, TourSerializer, TourListSerializer, FoodSerializer
+from .serializers.region import RegionSerializer, CountrySerializer
 
 
 class FoodViewSet(ReadOnlyModelViewSet):

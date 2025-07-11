@@ -1,6 +1,9 @@
+from typing import Any
 from django.contrib import admin
+from django.db.models.query import QuerySet
+from django.http import HttpRequest
+from unfold.admin import ModelAdmin
 from import_export.admin import ImportMixin
-from jet.filters import RelatedFieldAjaxListFilter
 from cargo.order.models import Order, Part, ProductInOrder, Product
 from .resources import ProductResource, OrderResource
 from .formats import OrderXLSX
@@ -8,7 +11,7 @@ from .forms import OrderConfirmImportForm, OrderImportForm
 
 
 @admin.register(Part)
-class PartAdmin(admin.ModelAdmin):
+class PartAdmin(ModelAdmin):
     list_display = ['number', 'country']
 
     def save_model(self, request, obj: Part, form, change):
@@ -21,9 +24,9 @@ class ProductInOrderTabular(admin.TabularInline):
     extra = 0
 
 @admin.register(Order)
-class OrderAdmin(ImportMixin, admin.ModelAdmin):
+class OrderAdmin(ImportMixin, ModelAdmin):
     list_display = ['number', 'client', 'parts']
-    list_filter = [('client', RelatedFieldAjaxListFilter), 'parts']
+    list_filter = ['parts']
     readonly_fields = [
         'departure_datetime', 'enter_uzb_datetime', 'process_local_datetime',
         'process_customs_datetime', 'process_received_datetime', 'create_time'
@@ -37,6 +40,11 @@ class OrderAdmin(ImportMixin, admin.ModelAdmin):
     # form = OrderForm
     skip_admin_log = True
     formats = [OrderXLSX]
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return super().get_queryset(request).select_related(
+            'client', 'parts'
+        )
 
     def send_api_customs_data(self, request, queryset):
         for order in queryset:
@@ -58,6 +66,6 @@ class OrderAdmin(ImportMixin, admin.ModelAdmin):
         return super().get_import_data_kwargs(request, *args, **kwargs)
 
 @admin.register(Product)
-class ProductAdmin(ImportMixin, admin.ModelAdmin):
+class ProductAdmin(ImportMixin, ModelAdmin):
     list_display = ['name', 'price']
     resource_classes = [ProductResource]

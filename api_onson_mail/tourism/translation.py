@@ -1,5 +1,5 @@
 from modeltranslation import translator
-from .models import Region, Type, Tour, Price, Day, Hotel, HotelType, Food, Country, Service
+from .models import Region, Type, Tour, Price, Day, Food, Country, Service
 
 
 @translator.register(Country)
@@ -19,16 +19,6 @@ class ServiceTranslationOptions(translator.TranslationOptions):
 
 @translator.register(Type)
 class TypeTranslationOptions(translator.TranslationOptions):
-    fields = ('name', 'description')
-
-
-@translator.register(HotelType)
-class HotelTypeTranslationOptions(translator.TranslationOptions):
-    fields = ('name', 'description')
-
-
-@translator.register(Hotel)
-class HotelTranslationOptions(translator.TranslationOptions):
     fields = ('name', 'description')
 
 

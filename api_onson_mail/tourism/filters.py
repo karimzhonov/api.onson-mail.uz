@@ -1,16 +1,6 @@
 import django_filters.rest_framework as filters
 from django.db.models import Case, When, Q, Value
-from .models import Region, Tour, Hotel, Country
-
-
-class HotelFilter(filters.FilterSet):
-    type = filters.BaseInFilter()
-    region = filters.BaseInFilter()
-    country = filters.BaseInFilter('region__country')
-
-    class Meta:
-        model = Hotel
-        fields = ['type', 'region']
+from .models import Region, Tour, Country
 
 
 class CountryFilter(filters.FilterSet):

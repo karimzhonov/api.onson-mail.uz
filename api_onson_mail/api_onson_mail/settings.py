@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'notification', 
     'icalendar',
     'tourism',
+    'tourism.hotel',
 
     'django.contrib.admin',
     'django.contrib.auth',

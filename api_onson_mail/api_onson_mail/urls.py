@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('api/calendar/', include('icalendar.urls')),
     path('api/oauth/', include('oauth.urls')),
     path('api/tourism/', include('tourism.urls')),
+    path('api/tourism/hotel/', include('tourism.hotel.urls')),
 
     path('api/company/', include('company.urls')),
     path('api/notification/', include('notification.urls')),

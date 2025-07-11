@@ -1,61 +1,9 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
-
-from .models import Type, Region, Tour, Day, Price, Image, Country, Hotel, HotelType, Food, Service
-
-
-
-class CountrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Country
-        fields = "__all__"
-
-
-class RegionSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Region
-        fields = "__all__"
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Service
-        fields = "__all__"
-
-
-class HotelTypeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = HotelType
-        fields = "__all__"
-
-
-class HotelSerializer(serializers.ModelSerializer):
-    type = HotelTypeSerializer()
-    region = RegionSerializer()
-    
-    class Meta:
-        model = Hotel
-        fields = "__all__"
-
-
-class FoodSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Food
-        fields = "__all__"
-
-
-class TypeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Type
-        fields = "__all__"
-
-
-
+from tourism.hotel.serializers import HotelSerializer
+from ..models import Tour, Day, Price, Image
+from .region import RegionSerializer
+from .others import TypeSerializer, FoodSerializer, ServiceSerializer
 
 class DaySerializer(serializers.ModelSerializer):
     region = RegionSerializer()
