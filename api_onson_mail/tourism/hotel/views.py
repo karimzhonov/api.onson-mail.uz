@@ -35,6 +35,6 @@ class HotelViewSet(ReadOnlyModelViewSet):
         return Hotel.objects.all().select_related(
             'type', 'region'
         ).prefetch_related(
-            'hotelfood_set', 'hotelroom_set', 'hotelservice_set',
-            'hotelfood_set__food', 'hotelroom_set__room', 'hotelservice_set__service'
+            'hotelfood_set', 'hotelroom_set', 'hotelservice_set', 'hotelimage_set',
+            'hotelfood_set__food', 'hotelroom_set__room', 'hotelservice_set__service',
         )

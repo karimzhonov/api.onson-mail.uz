@@ -53,6 +53,15 @@ class Hotel(models.Model):
         verbose_name_plural = 'Отели'
 
 
+class HotelImage(models.Model):
+    ordering = models.PositiveIntegerField(default=0)
+    hotel = models.ForeignKey(Hotel, models.CASCADE, null=True)
+    image = models.ImageField('Фото', upload_to='tourism/hotel/image')
+
+    class Meta:
+        ordering = ['ordering']
+
+
 class HotelFood(models.Model):
     hotel = models.ForeignKey(Hotel, models.CASCADE)
     food = models.ForeignKey("tourism.Food", models.PROTECT)
