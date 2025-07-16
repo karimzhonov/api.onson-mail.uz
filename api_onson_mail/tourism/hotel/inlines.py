@@ -17,7 +17,7 @@ class HotelFoodInline(TabularInline):
     extra = 0
 
 
-class HotelRoomInline(TabularInline, TranslationStackedInline):
+class HotelRoomInline(StackedInline, TranslationStackedInline):
     model = HotelRoom
     tab = True
     extra = 0

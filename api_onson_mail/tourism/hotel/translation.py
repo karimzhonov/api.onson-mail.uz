@@ -15,7 +15,7 @@ class HotelRoomTypeTranslationOptions(translator.TranslationOptions):
 
 @translator.register(HotelRoom)
 class HotelRoomTranslationOptions(translator.TranslationOptions):
-    pass
+    fields = ('description',)
 
 
 @translator.register(HotelServiceType)
