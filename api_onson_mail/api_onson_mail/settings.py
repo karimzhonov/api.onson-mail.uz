@@ -160,8 +160,9 @@ WEBPUSH_SETTINGS = {
 LANGUAGE_CODE = 'ru'
 
 LANGUAGES = [
-    ('ru', "Руский 🇷🇺"),
-    ('uz', "Узбекча 🇺🇿"),
+    ('ru', "Руский"),
+    ('uz', "Узбекча"),
+    ('en', "English"),
 ]
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'ru'

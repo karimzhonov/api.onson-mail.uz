@@ -63,7 +63,19 @@ class HotelSerializer(serializers.ModelSerializer):
     hotelroom_set = HotelRoomSerializer(many=True)
     hotelservice_set = HotelServiceSerializer(many=True)
     hotelimage_set = HotelImageSerializer(many=True)
+    min_price_b2b = serializers.SerializerMethodField()
+    min_price_b2c = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
         fields = "__all__"
+
+    def get_min_price_b2c(self, obj: Hotel):
+        min_food = getattr(obj.hotelfood_set.all().order_by('price_b2c').first(), 'price_b2c', 0) or 0
+        min_room = getattr(obj.hotelroom_set.all().order_by('price_b2c').first(), 'price_b2c', 0) or 0
+        return min_food + min_room
+    
+    def get_min_price_b2b(self, obj: Hotel):
+        min_food = getattr(obj.hotelfood_set.all().order_by('price_b2b').first(), 'price_b2b', 0) or 0
+        min_room = getattr(obj.hotelroom_set.all().order_by('price_b2b').first(), 'price_b2b', 0) or 0
+        return min_food + min_room

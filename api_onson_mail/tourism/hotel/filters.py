@@ -14,5 +14,5 @@ class HotelFilter(filters.FilterSet):
         model = Hotel
         fields = [
             'type', 'region', 'country',
-            'food', 'room', 'service'
+            'food', 'room', 'service', 'stars'
         ]

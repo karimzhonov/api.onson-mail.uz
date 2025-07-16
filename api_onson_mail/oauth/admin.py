@@ -1,5 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from unfold.forms import UserChangeForm, UserCreationForm, AdminPasswordChangeForm
+from unfold.admin import ModelAdmin
+from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Permission, ContentType
 
@@ -9,7 +11,10 @@ admin.site.register(Permission)
 admin.site.register(ContentType)
 
 @admin.register(User)
-class UserAdmin(UserAdmin):
+class UserAdmin(ModelAdmin, _UserAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
     list_display = ("phone", "email", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("phone", "first_name", "last_name", "email")

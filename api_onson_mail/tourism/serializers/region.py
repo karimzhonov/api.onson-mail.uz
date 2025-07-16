@@ -10,7 +10,7 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 class RegionSerializer(serializers.ModelSerializer):
-
+    country = CountrySerializer()
     class Meta:
         model = Region
         fields = "__all__"

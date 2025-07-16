@@ -1,6 +1,6 @@
 from modeltranslation import translator
 
-from .models import HotelType, HotelRoomType, HotelServiceType, Hotel
+from .models import HotelType, HotelRoomType, HotelServiceType, Hotel, HotelRoom
 
 
 @translator.register(HotelType)
@@ -11,6 +11,11 @@ class HotelTypeTranslationOptions(translator.TranslationOptions):
 @translator.register(HotelRoomType)
 class HotelRoomTypeTranslationOptions(translator.TranslationOptions):
     fields = ('name', 'description')
+
+
+@translator.register(HotelRoom)
+class HotelRoomTranslationOptions(translator.TranslationOptions):
+    pass
 
 
 @translator.register(HotelServiceType)
