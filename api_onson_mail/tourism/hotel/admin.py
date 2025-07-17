@@ -23,4 +23,4 @@ class HotelRoomTypeAdmin(TabbedTranslationAdmin, ModelAdmin):
 @admin.register(Hotel)
 class HotelAdmin(TabbedTranslationAdmin, ModelAdmin):
     list_display = ['name_uz', 'name_ru']
-    inlines = [HotelFoodInline, HotelRoomInline, HotelServiceInline, HotelImageInline]
+    inlines = [HotelRoomInline, HotelServiceInline, HotelImageInline]
