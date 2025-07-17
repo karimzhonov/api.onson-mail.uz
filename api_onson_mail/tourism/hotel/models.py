@@ -88,6 +88,7 @@ class HotelFood(models.Model):
 class HotelRoom(models.Model):
     hotel = models.ForeignKey(Hotel, models.CASCADE)
     room = models.ForeignKey(HotelRoomType, models.PROTECT, verbose_name='Комната')
+    food = models.ForeignKey("tourism.Food", models.PROTECT, verbose_name='Питание', null=True)
     description = models.TextField(max_length=255, blank=True, null=True, verbose_name='Описание')
     price_b2b = models.FloatField(blank=True, null=True, verbose_name='Цена (B2B)')
     price_b2c = models.FloatField(blank=True, null=True, verbose_name='Цена (B2C)')
