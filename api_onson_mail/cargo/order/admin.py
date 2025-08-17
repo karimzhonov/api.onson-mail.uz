@@ -12,7 +12,8 @@ from .forms import OrderConfirmImportForm, OrderImportForm
 
 @admin.register(Part)
 class PartAdmin(ModelAdmin):
-    list_display = ['number', 'country']
+    list_display = ['number', 'country', 'status', 'date']
+    list_editable = ['status']
 
     def save_model(self, request, obj: Part, form, change):
         super().save_model(request, obj, form, change)
