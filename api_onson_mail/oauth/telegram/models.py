@@ -31,6 +31,6 @@ class TelegramUser(models.Model):
                 )
                 data['user'] = user.id
                 serializer = TelegramUserSerializer(data=data)
-            serializer.is_valid(True)
+            serializer.is_valid()
             serializer.save()
             return serializer.instance
