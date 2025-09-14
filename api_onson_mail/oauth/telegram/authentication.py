@@ -40,41 +40,10 @@ def validate(auth_data):
     return auth_data 
 
 
-def validate_webapp_auth(init_data: dict):
+def validate_webapp_auth(auth_cred):
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     telegram_authenticator = TelegramAuthenticator(bot_token)
     try:
-        data = telegram_authenticator.validate(auth_cred)
+        return telegram_authenticator.validate(auth_cred)
     except InvalidInitDataError:
-        # TODO: handle error
-        pass
-    check_hash = init_data.get("hash")
-    if not check_hash:
         raise AuthenticationFailed("Missing hash")
-
-    data_check_arr = []
-    for key, value in init_data.items():
-        if key in ["hash", "signature"]:
-            continue
-        if isinstance(value, dict):
-            value = json.dumps(value, separators=(",", ":"))  # важно: без пробелов
-        data_check_arr.append(f"{key}={value}")
-
-    data_check_arr.sort()
-    data_check_string = "\n".join(data_check_arr)
-
-    secret_key = hashlib.sha256(bot_token.encode()).digest()
-    hash_value = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
-
-    if hash_value != check_hash:
-        raise AuthenticationFailed("Invalid hash")
-
-    try:
-        auth_date = int(init_data["auth_date"])
-    except (KeyError, ValueError):
-        raise AuthenticationFailed("Invalid auth_date")
-
-    if (timezone.now().timestamp() - auth_date) > 86400:
-        raise AuthenticationFailed("Auth date expired")
-
-    return init_data
