@@ -5,8 +5,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app/
-RUN apt-get -y update
-RUN apt-get -y install libev-dev libnss3 gdal-bin libpq5 libgdal-dev python3-gdal binutils libproj-dev
+RUN apt -y update
+RUN apt -y install libev-dev libnss3 gdal-bin libpq5 libgdal-dev python3-gdal binutils libproj-dev
 
 COPY /requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip
