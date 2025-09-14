@@ -46,7 +46,7 @@ def validate_webapp_auth(init_data: dict):
 
     data_check_arr = []
     for key, value in init_data.items():
-        if key == "hash":
+        if key in ["hash", "signature"]:
             continue
         if isinstance(value, dict):
             value = json.dumps(value, separators=(",", ":"))  # важно: без пробелов
