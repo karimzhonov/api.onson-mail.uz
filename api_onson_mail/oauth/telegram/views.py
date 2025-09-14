@@ -1,4 +1,5 @@
 import json
+from dataclasses import asdict
 from django.contrib.auth.models import update_last_login
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
@@ -31,9 +32,9 @@ class TelegramWebAppAuthView(CreateAPIView):
     authentication_classes = ()
     
     def post(self, request, *args, **kwargs):
-        validate_webapp_auth(json.loads(json.dumps(request.data)))
-        user_data = request.data['user']
-        user_data['hash'] = request.data.get('hash')
+        init_data = validate_webapp_auth(request.data)
+        user_data = asdict(init_data.user)
+        user_data['hash'] = init_data.hash
         telegram_user = TelegramUser.update_or_create(user_data)
         refresh = RefreshToken.for_user(telegram_user.user)
         data = {}
