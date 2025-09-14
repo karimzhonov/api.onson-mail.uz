@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-alpine
 
 ENV PROJECT_NAME=onson-web
 ENV PYTHONDONTWRITEBYTECODE 1
