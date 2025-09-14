@@ -1,4 +1,4 @@
-import os
+import os, json
 import hmac
 import hashlib
 from django.utils import timezone
@@ -39,48 +39,34 @@ def validate(auth_data):
 
 
 def validate_webapp_auth(init_data: dict):
-    """
-    Проверка Telegram WebApp initData.
-    https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
-    """
-    bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     check_hash = init_data.get("hash")
     if not check_hash:
-        raise AuthenticationFailed(_("Missing hash"), code="bot_token")
+        raise AuthenticationFailed("Missing hash")
 
-    # собираем data-check-string
     data_check_arr = []
     for key, value in init_data.items():
         if key == "hash":
             continue
         if isinstance(value, dict):
-            # user / chat приходят как JSON → сериализуем
-            value = str(value)
+            value = json.dumps(value, separators=(",", ":"))  # важно: без пробелов
         data_check_arr.append(f"{key}={value}")
 
     data_check_arr.sort()
     data_check_string = "\n".join(data_check_arr)
 
-    # считаем HMAC-SHA256
     secret_key = hashlib.sha256(bot_token.encode()).digest()
     hash_value = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
     if hash_value != check_hash:
-        raise AuthenticationFailed(
-            _("Given token not valid for any token type"),
-            code="bot_token",
-        )
+        raise AuthenticationFailed("Invalid hash")
 
-    # проверяем время (auth_date обязательно есть)
     try:
         auth_date = int(init_data["auth_date"])
     except (KeyError, ValueError):
-        raise AuthenticationFailed(_("Invalid auth_date"), code="bot_token")
+        raise AuthenticationFailed("Invalid auth_date")
 
     if (timezone.now().timestamp() - auth_date) > 86400:
-        raise AuthenticationFailed(
-            _("Auth date expired"),
-            code="bot_token",
-        )
+        raise AuthenticationFailed("Auth date expired")
 
     return init_data

@@ -32,7 +32,7 @@ class TelegramWebAppAuthView(CreateAPIView):
     
     def post(self, request, *args, **kwargs):
         validate_webapp_auth(json.loads(json.dumps(request.data)))
-        user_data = json.loads(request.data.user)
+        user_data = request.data['user']
         user_data['hash'] = request.data.get('hash')
         telegram_user = TelegramUser.update_or_create(user_data)
         refresh = RefreshToken.for_user(telegram_user.user)
