@@ -4,7 +4,7 @@ import hashlib
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import AuthenticationFailed
-from telegram_webapp_auth.auth import TelegramAuthenticator
+from telegram_webapp_auth.auth import TelegramAuthenticator, generate_secret_key
 from telegram_webapp_auth.errors import InvalidInitDataError
 
 
@@ -42,7 +42,8 @@ def validate(auth_data):
 
 def validate_webapp_auth(auth_cred):
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    telegram_authenticator = TelegramAuthenticator(bot_token)
+    secret = generate_secret_key(bot_token)
+    telegram_authenticator = TelegramAuthenticator(secret)
     try:
         return telegram_authenticator.validate(auth_cred)
     except InvalidInitDataError:
