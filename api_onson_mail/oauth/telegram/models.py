@@ -3,6 +3,8 @@ from django.db.transaction import atomic
 from django.contrib.auth import get_user_model
 
 
+REFERRAL_AMOUNT = 2
+
 class TelegramUser(models.Model):
     id = models.BigIntegerField(primary_key=True)
     auth_date = models.BigIntegerField(blank=True, null=True)
@@ -11,10 +13,10 @@ class TelegramUser(models.Model):
     hash = models.TextField()
     username = models.SlugField(blank=True, null=True)
     user = models.OneToOneField("oauth.User", models.CASCADE)
+    balance = models.FloatField(default=REFERRAL_AMOUNT)
 
     def __str__(self):
         return str(self.username or self.id)
-    
 
     @classmethod
     def update_or_create(cls, data):
@@ -34,3 +36,15 @@ class TelegramUser(models.Model):
             serializer.is_valid()
             serializer.save()
             return serializer.instance
+
+
+class BalanceHistory(models.Model):
+    amount = models.FloatField()
+    create_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('telegram.TelegramUser', models.CASCADE)
+    text = models.CharField(max_length=255)
+
+
+class ReferralLink(models.Model):
+    owner = models.ForeignKey('telegram.TelegramUser', models.CASCADE)
+    user_id = models.IntegerField(unique=True)
